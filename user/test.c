@@ -1071,6 +1071,7 @@ static const int loop_count1 = 10000;
 static int
 busy_loop1(void *arg)
 {
+	(void) arg;
 	while (1) {
 		int i, j;
 
@@ -1141,6 +1142,7 @@ test4(void)
 static int
 no_run(void *arg)
 {
+	(void)arg;
 	assert(0);
 	return 1;
 }
@@ -1250,6 +1252,8 @@ proc_timer1(void *arg)
 	unsigned long dur;
 	int i;
 
+	(void) arg;
+
 	clock_settings(&quartz, &ticks);
 	dur = (quartz + ticks) / ticks;
 	printf(" 2");
@@ -1265,6 +1269,7 @@ static volatile unsigned long timer;
 static int
 proc_timer(void *arg)
 {
+	(void)arg;
 	while (1) {
 		unsigned long t = timer + 1;
 		timer = t;
@@ -1277,6 +1282,7 @@ proc_timer(void *arg)
 static int
 sleep_pr1(void *args)
 {
+	(void)args;
 	wait_clock(current_clock() + 2);
 	printf(" not killed !!!");
 	assert(0);
@@ -1333,6 +1339,7 @@ test7(void)
 static int
 suicide(void *arg)
 {
+	(void)arg;
 	kill(getpid());
 	assert(0);
 	return 0;
@@ -1342,6 +1349,7 @@ static int
 suicide_launcher(void *arg)
 {
 	int pid1;
+	(void)arg;
 	pid1 = start(suicide, 4000, 192, "suicide_launcher", 0);
 	assert(pid1 > 0);
 	return pid1;
@@ -1387,6 +1395,7 @@ test8(void)
 static int
 nothing(void *arg)
 {
+	(void)arg;
 	return 0;
 }
 
@@ -1538,6 +1547,7 @@ __test_valid_regs2(int a1, int a2, int a3, int a4, int a5, int a6);
 static int
 test_regs2(void *arg)
 {
+	(void)arg;
 	__it_ok = 0;
 	__test_valid_regs2(rand(), rand(), rand(), rand(), rand(), rand());
 	return 0;
@@ -2305,13 +2315,13 @@ __asm__(
 extern void
 __hacking(void);
 
-static void __inline__
+static __inline__ void 
 outb(unsigned char value, unsigned short port)
 {
 	__asm__ __volatile__("outb %0, %1" : : "a" (value), "Nd" (port));
 }
 
-static unsigned char __inline__
+static __inline__ unsigned char 
 inb(unsigned short port)
 {
 	unsigned char rega;
@@ -2723,6 +2733,7 @@ test_proc(void *arg)
 {
 	char buffer[20];
 
+	(void)arg;
 	assert(getprio(getpid()) == 128);
 
 	unsigned long flags;
