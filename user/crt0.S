@@ -60,6 +60,17 @@ UNIMPLEMENTED(sreset)
 UNIMPLEMENTED(sdelete)
 UNIMPLEMENTED(try_wait)
 UNIMPLEMENTED(sys_info)
+UNIMPLEMENTED(pcreate)
+UNIMPLEMENTED(psend)
+UNIMPLEMENTED(pdelete)
+UNIMPLEMENTED(pcount)
+UNIMPLEMENTED(preceive)
+UNIMPLEMENTED(preset)
+UNIMPLEMENTED(clock_settings)
+UNIMPLEMENTED(wait_clock)
+UNIMPLEMENTED(current_clock)
+UNIMPLEMENTED(cons_echo)
 
-	
+
+
 
