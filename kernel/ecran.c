@@ -112,6 +112,9 @@ void console_putbytes(char *chaine, int32_t taille)
     for(int i = 0; i < taille; i++) {
         traite_car(chaine[i]);
     }
+    if(cursor_lig==24 && cursor_col == 79){
+      defilement();
+    }
 }
 
 void affiche_haut_gauche(char * s) 
