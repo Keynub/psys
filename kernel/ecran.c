@@ -78,16 +78,27 @@ void traite_car(char c)
 {
     if(c < 32) {
         switch(c) {
-            // TODO caractères de contrôle
             case 8:
-                break;
+	      if(cursor_col!=0){
+		place_curseur(cursor_lig, cursor_col-1);
+	      }
+              break;
             case 9:
-                break;
+	      place_curseur(cursor_lig, (cursor_col!=NB_COL-1)?((cursor_col/8)*8+8):NB_COL-1 );               
+	      break;
             case 10:
-                break;
+	      if(cursor_lig+1==NB_LINE){
+		defilement();
+		place_curseur(NB_LINE-1, 0);
+	      }
+	      else 
+		place_curseur(cursor_lig+1, 0);
+              break;
             case 12:
+	        efface_ecran();
                 break;
             case 13:
+	      place_curseur(cursor_lig, 0);
                 break;
             default:
                 break;
@@ -97,6 +108,7 @@ void traite_car(char c)
         step_cursor();
     }
 }
+
 
 void defilement()
 {
