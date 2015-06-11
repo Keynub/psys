@@ -1,6 +1,10 @@
 QEMU = /usr/libexec/qemu-kvm
+QEMUOPTS = -m 256 -kernel kernel/kernel.bin
 
-QEMUOPTS = -no-kvm -net nic -net user,tftp="`pwd`",bootfile=$(PXE) -boot n -cpu pentium -rtc base=localtime -m 64M -S -s
+VINAGRE = vinagre
+VINAGREOPTS = localhost:5901
+
+#QEMUOPTS = -no-kvm -net nic -net user,tftp="`pwd`",bootfile=$(PXE) -boot n -cpu pentium -rtc base=localtime -m 64M -S -s
 
 .PHONY: clean all
 
@@ -14,3 +18,7 @@ clean:
 
 run:
 	$(QEMU) $(QEMUOPTS)
+
+vinagre:
+	$(VINAGRE) $(VINAGREOPTS)
+
