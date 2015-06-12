@@ -22,7 +22,7 @@
 
 #define MASK_DATA_PORT 0x21
 
-#define NAME_SIZE 20;
-#define STACK_SIZE 512;
-#define MAX_NB_PROCESS 2;
+#define NAME_SIZE 20
+#define STACK_SIZE 512
+#define MAX_NB_PROCESS 2
 #endif
