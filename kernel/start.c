@@ -24,22 +24,30 @@ int fact(int n)
 
 void kernel_start(void)
 {
-    process_t idle_p, prog_p;
-    idle_p.pid = 0;
-    strcpy(idle_p.name, "idle_p");
-    idle_p.state = RUNNING;
+//    
+//    process_t idle_p, prog_p;
+//    idle_p.pid = 0;
+//    strcpy(idle_p.name, "idle_p");
+//    idle_p.state = RUNNING;
+//    
+//    prog_p.pid = 1;
+//    strcpy( prog_p.name, " prog_p");
+//    prog_p.state = WAITING;
+//     
+//    prog_p.reg[1] = (uint32_t) &prog_p.stack;
+//    prog_p.stack[0]= (uint32_t) &(prog1);
+//    
+//    //idle_p.stack[0]= (uint32_t) &(idle);
+//    
+//    process_tab[0] = idle_p;
+//    process_tab[1] = prog_p;
+//    
+//    idle();
     
-    prog_p.pid = 1;
-    strcpy( prog_p.name, " prog_p");
-    prog_p.state = WAITING;
-     
-    prog_p.reg[1] = (uint32_t) &prog_p.stack;
-    prog_p.stack[0]= (uint32_t) &(prog1);
-    
-    process_tab[0] = idle_p;
-    process_tab[1] = prog_p;
-    
-    idle();
+    for(;;) {
+        for(int i = 0; i < 500000000 ; i++) {}
+        printf("LICOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOORNE");
+    }
      
      while(1)
 	  hlt();

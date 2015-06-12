@@ -1,0 +1,24 @@
+#include "test.h"
+#include "cpu.h"
+#include "process.h"
+#include "global.h"
+#include <stdio.h>
+
+void idle(void)
+{
+      for (;;) {
+        for (int i = 0; i < 500000; i++) {}
+        printf("A");
+        ctx_sw(process_tab[0].reg, process_tab[1].reg);
+    }
+    printf("[idle] je bloque le systeme\n");
+    hlt();
+}
+
+void prog1(void)
+{   for(;;) {
+        for (int i = 0; i < 500000; i++) {}
+        printf("B");
+        ctx_sw(process_tab[1].reg, process_tab[0].reg);
+    }
+}
