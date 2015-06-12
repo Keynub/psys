@@ -6,6 +6,7 @@
 #include "string.h"
 #include "test.h"
 #include "process.h"
+#include "ecran.h"
 
 /*
  *   int16_t pid;
@@ -17,12 +18,12 @@
 
 void kernel_start(void)
 {
-   
+
     process_t idle_p, prog_p;
     idle_p.pid = 0;
     strcpy(idle_p.name, "idle_p");
     idle_p.state = RUNNING;
-    
+
     prog_p.pid = 1;
     strcpy( prog_p.name, " prog_p");
     prog_p.state = WAITING;
@@ -41,7 +42,6 @@ void kernel_start(void)
         for(int i = 0; i < 500000000 ; i++) {}
         printf("LICOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOORNE");
     }*/
-     
      while(1)
 	  hlt();
 

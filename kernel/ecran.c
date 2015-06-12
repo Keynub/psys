@@ -62,18 +62,6 @@ void efface_ligne(uint32_t lig) {
     }
 }
 
-void step_cursor() {
-    cursor_col ++;
-    if(cursor_col == 80) {
-        cursor_col = 0;
-        cursor_lig ++;
-        if (cursor_lig == 25) {
-            cursor_lig = 0;
-        }
-    }
-    place_curseur(cursor_lig, cursor_col);
-}
-
 void defilement()
 {
     void * mem = (void *) MEM_VIDEO;
@@ -81,6 +69,19 @@ void defilement()
     uint32_t size = NB_COL * NB_LINE - NB_COL;
     memmove(mem, newmem, size*2);
     efface_ligne(NB_LINE -1);
+}
+
+void step_cursor() {
+    cursor_col ++;
+    if(cursor_col == 80) {
+        cursor_col = 0;
+        cursor_lig ++;
+        if (cursor_lig == 25) {
+            defilement();
+            cursor_lig = 24;
+        }
+    }
+    place_curseur(cursor_lig, cursor_col);
 }
 
 void traite_car(char c)
@@ -122,9 +123,6 @@ void console_putbytes(char *chaine, int32_t taille)
 {
     for(int i = 0; i < taille; i++) {
         traite_car(chaine[i]);
-    }
-    if(cursor_lig==24 && cursor_col == 79){
-      defilement();
     }
 }
 
