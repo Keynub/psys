@@ -1,7 +1,8 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef _PROCESS_H_
+#define _PROCESS_H_
 
 #include <inttypes.h>
+
 #include "const.h"
 
 enum {RUNNING, WAITING, BLOCKED_SEM, BLOCKED_IO, BLOCKED_CHILD, SLEEP, ZOMBIE };
@@ -17,4 +18,9 @@ typedef struct {
 
 void ctx_sw(uint32_t * reg1, uint32_t * reg2);
 
+void ordonnance();
+
+char* mon_nom();
+
+int16_t mon_pid();
 #endif
