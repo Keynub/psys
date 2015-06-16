@@ -10,10 +10,11 @@
     les fonctions int32_t mon_pid(void) et char *mon_nom(void) renvoient simplement le pid et le nom du processus en cours d'exécution, elles ne posent pas de difficulté d'implantation. 
  */
 void ordonnance(){
-  
     uint32_t next = index_run^1;
-    process_tab[index_run].state = WAITING;
-    process_tab[next].state = RUNNING;
+    /* if(process_tab[index_run].vivant == true) */
+        process_tab[index_run].state = WAITING;
+    if(process_tab[next].vivant == true)
+        process_tab[next].state = RUNNING;
     index_run = next;
     ctx_sw(process_tab[index_run].reg, process_tab[next].reg);
 }
@@ -24,4 +25,17 @@ char* mon_nom(){
 
 int16_t mon_pid(){
     return process_tab[index_run].pid;
+}
+
+bool est_vivant(){
+    return process_tab[index_run].vivant;
+}
+
+/* Gère la terminaison d'un processus, */
+/* la valeur retval est passée au processus père */
+/* quand il appelle waitpid. */
+void terminaison(int retval){
+    process_tab[index_run].vivant = false;
+    // TODO valeur de retour pour waitpid
+    ordonnance();
 }

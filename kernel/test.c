@@ -41,3 +41,11 @@ void prog1(void) {
         ordonnance(); 
     }
 }
+
+void test_terminaison(void) {
+    for (int i = 0; i < 2; i++) {
+        printf("[processus 1] pid = %i\n", mon_pid());
+        dors(2);
+    }
+    terminaison();
+}
