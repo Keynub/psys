@@ -23,4 +23,7 @@ void ordonnance();
 char* mon_nom();
 
 int16_t mon_pid();
+
+int cree_processus(const char * name, void (*code)(void));
+
 #endif
