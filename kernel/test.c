@@ -4,8 +4,8 @@
 #include "global.h"
 #include <stdio.h>
 
-/*
-    void idle(void)
+
+/*    void idle(void)
 {
       for (;;) {
         for (int i = 0; i < 500000; i++) {}
@@ -23,8 +23,8 @@ void prog1(void)
         ctx_sw(process_tab[1].reg, process_tab[0].reg);
     }
 }
-
 */
+
 
 void idle(void)
 {

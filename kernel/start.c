@@ -30,7 +30,7 @@ void kernel_start(void)
 
     process_tab[last_index ++] = idle_p;
 
-    cree_processus("prog1", prog1);
+    cree_processus("prog1", &(prog1));
     
     index_run = 0;
 

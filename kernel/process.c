@@ -14,9 +14,11 @@ void ordonnance(){
   
     uint32_t next = index_run^1;
     process_tab[index_run].state = WAITING;
-    process_tab[next].state = RUNNING; 
-    ctx_sw(process_tab[index_run].reg, process_tab[next].reg);
+    process_tab[next].state = RUNNING;
+    uint32_t tmp = index_run;
     index_run = next;
+    ctx_sw(process_tab[tmp].reg, process_tab[next].reg);
+    
 }
 
 char* mon_nom(){
@@ -28,17 +30,16 @@ int16_t mon_pid(){
 }
 
 int cree_processus(const char * name, void (*code)(void)) {
-    process_t proc;
 
-    proc.pid = last_pid ++;
-    strcpy( proc.name, name);
-    proc.state = WAITING;
+    uint32_t index = last_index ++;
 
-    proc.reg[1] = (uint32_t) &(proc.stack[STACK_SIZE -1]);
-    proc.stack[STACK_SIZE -1]= (uint32_t) &(code);
+    process_tab[index].pid = last_pid ++;
+    strcpy( process_tab[index].name, name);
+    process_tab[index].state = WAITING;
 
-    process_tab[last_index ++] = proc;
+    process_tab[index].reg[1] = (uint32_t) &(process_tab[index].stack[STACK_SIZE -1]);
+    process_tab[index].stack[STACK_SIZE -1]= (uint32_t) (code);
 
-    return proc.pid;
+    return process_tab[index].pid;
 }
 
