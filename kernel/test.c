@@ -25,6 +25,7 @@ void prog1(void)
 }
 
 */
+
 void idle(void)
 {
     for (;;) {
@@ -41,3 +42,27 @@ void prog1(void) {
         ordonnance(); 
     }
 }
+
+/*void idle()
+{
+	unsigned long i;
+	while (1){
+		printf("A"); 
+		sti(); 
+		
+		for (i = 0; i < 5000000; i++); 
+		cli(); 
+	}
+}
+
+void prog1()
+{
+	unsigned long i;
+	while (1){
+		printf("B"); 
+		sti();
+		
+		for (i = 0; i < 5000000; i++); 
+		cli();
+	}
+}*/

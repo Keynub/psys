@@ -13,9 +13,9 @@ void ordonnance(){
   
     uint32_t next = index_run^1;
     process_tab[index_run].state = WAITING;
-    process_tab[next].state = RUNNING;
-    index_run = next;
+    process_tab[next].state = RUNNING; 
     ctx_sw(process_tab[index_run].reg, process_tab[next].reg);
+    index_run = next;
 }
 
 char* mon_nom(){

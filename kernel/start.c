@@ -7,6 +7,7 @@
 #include "test.h"
 #include "process.h"
 #include "ecran.h"
+#include "horloge.h"
 
 /*
  *   int16_t pid;
@@ -35,13 +36,15 @@ void kernel_start(void)
     process_tab[1] = prog_p;
     
     index_run = 0;
+
+    
+    /*regler_frequence_horloge();
+    demasque_IRQ();
+    init_traitant_IT32(traitant_IT_32);*/
+
     
     idle();
-    
-  /*  for(;;) {
-        for(int i = 0; i < 500000000 ; i++) {}
-        printf("LICOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOORNE");
-    }*/
+
      while(1)
 	  hlt();
 
