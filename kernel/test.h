@@ -3,4 +3,5 @@
 
 void idle();
 void prog1();
+void prog2();
 #endif

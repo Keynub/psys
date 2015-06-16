@@ -43,6 +43,7 @@ void prog1(void) {
     }
 }*/
 
+
 void idle()
 {
 	unsigned long i;
@@ -65,4 +66,5 @@ void prog1()
 		for (i = 0; i < 5000000; i++); 
 		cli();
 	}
+
 }
