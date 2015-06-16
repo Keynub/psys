@@ -1,6 +1,7 @@
 #include "process.h"
 #include "global.h"
 #include "stdio.h"
+#include <string.h>
 /*
       la fonction void ordonnance(void) a pour rôle d'implanter la politique d'ordonnancement en choisissant le prochain processus à activer (comme il n'y en a que 2 pour
  *  l'instant, ça ne devrait pas poser de difficulté) et de provoquer le changement de processus en appelant la fonction ctx_sw avec les bons paramètres ;
@@ -24,4 +25,19 @@ char* mon_nom(){
 
 int16_t mon_pid(){
     return process_tab[index_run].pid;
+}
+
+int cree_processus(const char * name, void (*code)(void)) {
+    process_t proc;
+
+    proc.pid = last_pid ++;
+    strcpy( proc.name, name);
+    proc.state = WAITING;
+
+    proc.reg[1] = (uint32_t) &(proc.stack[STACK_SIZE -1]);
+    proc.stack[STACK_SIZE -1]= (uint32_t) &(code);
+
+    process_tab[last_index ++] = proc;
+
+    return proc.pid;
 }
