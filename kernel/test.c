@@ -26,7 +26,7 @@ void prog1(void)
 */
 
 
-void idle(void)
+/*void idle(void)
 {
     for (;;) {
         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
@@ -41,9 +41,9 @@ void prog1(void) {
         for (int32_t i = 0; i < 100000000; i++);
         ordonnance(); 
     }
-}
+}*/
 
-/*void idle()
+void idle()
 {
 	unsigned long i;
 	while (1){
@@ -65,4 +65,4 @@ void prog1()
 		for (i = 0; i < 5000000; i++); 
 		cli();
 	}
-}*/
+}
