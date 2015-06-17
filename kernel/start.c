@@ -37,9 +37,9 @@ void kernel_start(void)
     index_run = 0;
 
     
-    /*regler_frequence_horloge();
+    regler_frequence_horloge();
     demasque_IRQ();
-    init_traitant_IT32(traitant_IT_32);*/
+    init_traitant_IT32(traitant_IT_32);
 
     
     idle();

@@ -18,7 +18,8 @@
 #define SET_FREQUENCY_CMD 0x34
 
 #define QUARTZ 0x1234DD
-#define CLOCKFREQ 50
+#define CLOCKFREQ 100
+#define SCHEDFREQ 50
 
 #define MASK_DATA_PORT 0x21
 
