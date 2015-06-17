@@ -5,12 +5,14 @@
 
 void ordonnance(){
 
-    printf("Last Index : %d\n", last_index);
+    /*printf("Last Index : %d\n", last_index);
     uint32_t next = (index_run + 1) % last_index ;
     while(!process_tab[next].vivant){
         next = (next + 1) % last_index ;
     }
-    printf("Je suis dans %s et next c'est %d\n", mon_nom(), next);
+    printf("Je suis dans %s et next c'est %d\n", mon_nom(), next);*/
+
+    uint32_t next = index_run^1;	
     process_tab[index_run].state = WAITING;
     process_tab[next].state = RUNNING;
     uint32_t tmp = index_run; // need to store index_run or we can't change it before context switch
@@ -36,13 +38,25 @@ bool est_vivant(){
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/){
     process_tab[index_run].vivant = false;
+    push(&l, index_run);	
     // TODO valeur de retour pour waitpid
-    ordonnance();
+  //  ordonnance();
 }
 
 int cree_processus(const char * name, void (*code)(void)) {
 
-    uint32_t index = last_index ++;
+ uint32_t index;
+
+if (l!=NULL){
+	index = *(pop(&l));
+}
+else{
+	if(last_index == MAX_NB_PROCESS)
+		return -1;
+	else
+	index = last_index ++;
+}
+  
 
 
     process_tab[index].pid = last_pid ++;
@@ -54,7 +68,6 @@ int cree_processus(const char * name, void (*code)(void)) {
 
     process_tab[index].reg[1] = (uint32_t) &(process_tab[index].stack[STACK_SIZE -1]);
     process_tab[index].stack[STACK_SIZE -1]= (uint32_t) (code);
-    // TODO réutilisation des cases vides du tableau des processus ou utilisation d'une meilleure structure de données
-
+   
     return process_tab[index].pid;
 }

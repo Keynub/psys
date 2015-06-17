@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include "const.h"
 #include "process.h"
+#include "list.h"
 
 
  process_t process_tab [MAX_NB_PROCESS];
@@ -12,5 +13,7 @@
  uint32_t last_index;
  uint32_t cmpt;
  uint32_t p;
+ list l;
+
 
 #endif

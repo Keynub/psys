@@ -44,12 +44,18 @@ void prog1(void) {
 }*/
 
 void test_terminaison(void) {
-    for (int i = 0; i < 20; i++) {
+while (1){
+    //for (int i = 0; i < 20; i++) {
         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance();
-    }
+       // for (int32_t i = 0; i < 100000000; i++);
+       // ordonnance();
+    //}
+		sti();
+
+		for (int i = 0; i < 5000000; i++);
+		cli();
     terminaison();
+   }	
 }
 
 void idle()

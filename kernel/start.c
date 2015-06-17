@@ -20,7 +20,7 @@ void kernel_start(void)
 {
 	cmpt = 0;
 	p = CLOCKFREQ/SCHEDFREQ;
-
+l = NULL;
 
     last_pid = 0;
     last_index = 0;
@@ -34,7 +34,7 @@ void kernel_start(void)
 
     process_tab[last_index ++] = idle_p;
 
-    cree_processus("prog1", &(prog1));
+    //cree_processus("prog1", &(prog1));
     cree_processus("prog2", &(test_terminaison));
 
     index_run = 0;
