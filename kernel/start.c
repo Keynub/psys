@@ -28,21 +28,14 @@ void kernel_start(void)
 
     process_t idle_p;
     idle_p.pid = last_pid ++;
+    idle_p.vivant = true;
     strcpy(idle_p.name, "idle_p");
     idle_p.state = RUNNING;
 
     process_tab[last_index ++] = idle_p;
 
     cree_processus("prog1", &(prog1));
-    cree_processus("prog2", &(prog1));
-    cree_processus("prog3", &(prog1));
-    cree_processus("prog4", &(prog1));
-    cree_processus("prog5", &(prog1));
-    cree_processus("prog6", &(prog1));
-    cree_processus("prog7", &(prog1));
-    cree_processus("prog8", &(prog1));
-    cree_processus("prog9", &(prog1));
-    cree_processus("prog10", &(prog1));
+    cree_processus("prog2", &(test_terminaison));
 
     index_run = 0;
 

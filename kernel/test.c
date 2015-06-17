@@ -43,16 +43,24 @@ void prog1(void) {
     }
 }*/
 
+void test_terminaison(void) {
+    for (int i = 0; i < 20; i++) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        for (int32_t i = 0; i < 100000000; i++);
+        ordonnance();
+    }
+    terminaison();
+}
 
 void idle()
 {
 	unsigned long i;
 	while (1){
-		printf("A"); 
-		sti(); 
-		
-		for (i = 0; i < 5000000; i++); 
-		cli(); 
+		printf("A");
+		sti();
+
+		for (i = 0; i < 5000000; i++);
+		cli();
 	}
 }
 
@@ -60,11 +68,11 @@ void prog1()
 {
 	unsigned long i;
 	while (1){
-		printf("B"); 
+		printf("B");
 		sti();
-		
-		for (i = 0; i < 5000000; i++); 
+
+		for (i = 0; i < 5000000; i++);
 		cli();
 	}
-
 }
+
