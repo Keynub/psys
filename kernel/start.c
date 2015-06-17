@@ -34,7 +34,6 @@ l = NULL;
 
     process_tab[last_index ++] = idle_p;
 
-
     cree_processus("prog1", &(prog1));
     cree_processus("termm", &(test_terminaison));
 

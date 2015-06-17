@@ -25,5 +25,5 @@
 
 #define NAME_SIZE 20
 #define STACK_SIZE 512
-#define MAX_NB_PROCESS 4
+#define MAX_NB_PROCESS 12
 #endif

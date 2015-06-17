@@ -5,18 +5,10 @@
 
 void ordonnance(){
 
-
-    printf("Last Index : %d\n", last_index);
-
     uint32_t next = (index_run + 1) % last_index ;
     while(!process_tab[next].vivant){
         next = (next + 1) % last_index ;
     }
-
-    printf("Je suis dans %s et next c'est %d\n", mon_nom(), next);
-
-
-
 
     process_tab[index_run].state = WAITING;
     process_tab[next].state = RUNNING;
@@ -44,9 +36,11 @@ bool est_vivant(){
 void terminaison(/*int retval*/){
     printf("APPPEEEEEEEEEEEEEEEEEEL A TERMINAISONNNNNNNNNNNNNNNNNNNNN\n");
     process_tab[index_run].vivant = false;
-    push(&l, index_run);	
-    // TODO valeur de retour pour waitpid
-  //  ordonnance();
+    
+	push(&l, index_run);	
+  
+  // TODO valeur de retour pour waitpid
+    ordonnance();
 
 }
 
