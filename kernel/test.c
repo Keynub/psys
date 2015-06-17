@@ -45,18 +45,18 @@ void prog1(void) {
 
 void test_terminaison(void) {
     for (int i = 0; i < 20; i++) {
-        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance();
+        printf("i = %d [%s] pid = %i\n",i, mon_nom(), mon_pid());
+        sti();
+        for (int32_t i = 0; i < 10000000; i++) {}
+        cli();
     }
-    terminaison();
 }
 
 void idle()
 {
 	unsigned long i;
 	while (1){
-		printf("A");
+		printf("A\n");
 		sti();
 
 		for (i = 0; i < 5000000; i++);
@@ -68,7 +68,7 @@ void prog1()
 {
 	unsigned long i;
 	while (1){
-		printf("B");
+		printf("B\n");
 		sti();
 
 		for (i = 0; i < 5000000; i++);
