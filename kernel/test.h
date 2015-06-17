@@ -4,4 +4,5 @@
 void idle();
 void prog1();
 void test_terminaison();
+void prog2();
 #endif

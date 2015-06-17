@@ -7,5 +7,7 @@
 
  process_t process_tab [MAX_NB_PROCESS];
  uint32_t index_run;
+ uint32_t last_pid;
+ uint32_t last_index;
 
 #endif

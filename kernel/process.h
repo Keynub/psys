@@ -3,6 +3,8 @@
 
 #include <inttypes.h>
 
+#include <stdbool.h>
+
 #include "const.h"
 
 enum {RUNNING, WAITING, BLOCKED_SEM, BLOCKED_IO, BLOCKED_CHILD, SLEEP, ZOMBIE };
@@ -30,6 +32,9 @@ bool est_vivant();
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processurs père */
 /* quand il appelle waitpid. */
-void terminaison(int retval);
+void terminaison(/*int retval*/);
+
+int cree_processus(const char * name, void (*code)(void));
+
 
 #endif

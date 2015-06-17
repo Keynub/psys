@@ -4,8 +4,8 @@
 #include "global.h"
 #include <stdio.h>
 
-/*
-    void idle(void)
+
+/*    void idle(void)
 {
       for (;;) {
         for (int i = 0; i < 500000; i++) {}
@@ -23,8 +23,9 @@ void prog1(void)
         ctx_sw(process_tab[1].reg, process_tab[0].reg);
     }
 }
-
 */
+
+
 void idle(void)
 {
     for (;;) {
@@ -43,9 +44,35 @@ void prog1(void) {
 }
 
 void test_terminaison(void) {
-    for (int i = 0; i < 2; i++) {
-        printf("[processus 1] pid = %i\n", mon_pid());
-        dors(2);
+    for (int i = 0; i < 20; i++) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        for (int32_t i = 0; i < 100000000; i++);
+        ordonnance();
     }
     terminaison();
 }
+
+/*void idle()
+{
+	unsigned long i;
+	while (1){
+		printf("A");
+		sti();
+
+		for (i = 0; i < 5000000; i++);
+		cli();
+	}
+}
+
+void prog1()
+{
+	unsigned long i;
+	while (1){
+		printf("B");
+		sti();
+
+		for (i = 0; i < 5000000; i++);
+		cli();
+	}
+}*/
+
