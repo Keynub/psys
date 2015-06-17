@@ -1,7 +1,7 @@
 #include "debugger.h"
 #include "cpu.h"
 #include "stdio.h"
-
+#include "horloge.h"
 #include "global.h"
 #include "string.h"
 #include "test.h"
@@ -18,6 +18,9 @@
 
 void kernel_start(void)
 {
+	cmpt = 0;
+	p = CLOCKFREQ/SCHEDFREQ;
+
 
     last_pid = 0;
     last_index = 0;

@@ -1,5 +1,5 @@
-#ifndef PL_HORLOGE
-#define PL_HORLOGE
+#ifndef _HORLOGE_H_
+#define _HORLOGE_H_
 
 void tic_PIT(void);
 
