@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "const.h"
+#include "queue.h"
 
 enum {RUNNING, WAITING, BLOCKED_SEM, BLOCKED_IO, BLOCKED_CHILD, SLEEP, ZOMBIE };
 
@@ -16,7 +17,8 @@ typedef struct {
     uint32_t reg[5];
     uint32_t stack[STACK_SIZE];
     bool vivant;
-    
+    link chain;
+    int prio;
 } process_t;
 
 void ctx_sw(uint32_t * reg1, uint32_t * reg2);

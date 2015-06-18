@@ -2,74 +2,77 @@
 #include "global.h"
 #include "stdio.h"
 #include <string.h>
+#include "queue.h"
 
 void ordonnance(){
 
-    uint32_t next = (index_run + 1) % last_index ;
-    while(!process_tab[next].vivant){
-        next = (next + 1) % last_index ;
+    if(est_vivant()) {
+        queue_add(cur_proc, &process_queue, process_t, chain, prio);
+        cur_proc -> state = WAITING;
     }
+    process_t * next_proc = queue_out(&process_queue, process_t, chain);
 
-    process_tab[index_run].state = WAITING;
-    process_tab[next].state = RUNNING;
-    uint32_t tmp = index_run; // need to store index_run or we can't change it before context switch
+    next_proc -> state = RUNNING;
+    process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
 
-    index_run = next;
-    ctx_sw(process_tab[tmp].reg, process_tab[next].reg);
+    cur_proc = next_proc;
+    ctx_sw(tmp -> reg, next_proc -> reg);
 }
 
 char* mon_nom(){
-    return process_tab[index_run].name;
+    return cur_proc -> name;
 }
 
 int16_t mon_pid(){
-    return process_tab[index_run].pid;
+    return cur_proc -> pid;
 }
 
 bool est_vivant(){
-    return process_tab[index_run].vivant;
+    return cur_proc -> vivant;
 }
 
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processus père */
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/){
-    printf("APPPEEEEEEEEEEEEEEEEEEL A TERMINAISONNNNNNNNNNNNNNNNNNNNN\n");
-    process_tab[index_run].vivant = false;
-    
-	push(&l, index_run);	
-  
+    cur_proc -> vivant = false;
+	push(&l, cur_proc -> pid);
   // TODO valeur de retour pour waitpid
     ordonnance();
-
 }
 
 int cree_processus(const char * name, void (*code)(void)) {
 
- uint32_t index;
+    uint32_t pid;
 
-if (l!=NULL){
-	index = *(pop(&l));
-}
-else{
-	if(last_index == MAX_NB_PROCESS)
-		return -1;
-	else
-	index = last_index ++;
-}
+    if (l!=NULL){
+        pid = *(pop(&l));
+    }
+    else{
+        if(last_pid == MAX_NB_PROCESS)
+            return -1;
+        else
+        pid = last_pid ++;
+    }
   
 
 
-    process_tab[index].pid = last_pid ++;
-    process_tab[index].vivant = true;
 
-    strcpy( process_tab[index].name, name);
+    process_tab[pid].pid = pid;
+    process_tab[pid].vivant = true;
+    process_tab[pid].prio = 1;
+    INIT_LINK(& (process_tab[pid].chain));
 
-    process_tab[index].state = WAITING;
-    process_tab[index].reg[1] = (uint32_t) &(process_tab[index].stack[STACK_SIZE -2]);
-    process_tab[index].stack[STACK_SIZE - 2] = (uint32_t) (code);
-    process_tab[index].stack[STACK_SIZE - 1] = (uint32_t) &(terminaison);
-       return process_tab[index].pid;
+    strcpy( process_tab[pid].name, name);
+
+    process_tab[pid].state = WAITING;
+    process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -2]);
+    process_tab[pid].stack[STACK_SIZE - 2] = (uint32_t) (code);
+    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) &(terminaison);
+
+    queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
+
+    return process_tab[pid].pid;
 
 }
 
