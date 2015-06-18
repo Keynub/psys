@@ -10,3 +10,10 @@
 .idea
 *.iml
 *~
+
+kernel/kernel.bin
+kernel/out/
+user/out/
+user/user.bin
+user/user.debug
+
