@@ -6,11 +6,15 @@
 
 void ordonnance(){
 
+    // if queue is empty, keep executing same process
+    if(queue_empty(&process_queue)) { return; }
+
+    process_t * next_proc = queue_out(&process_queue, process_t, chain);
+
     if(est_vivant()) {
         queue_add(cur_proc, &process_queue, process_t, chain, prio);
         cur_proc -> state = WAITING;
     }
-    process_t * next_proc = queue_out(&process_queue, process_t, chain);
 
     next_proc -> state = RUNNING;
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
@@ -41,7 +45,7 @@ void terminaison(/*int retval*/){
     ordonnance();
 }
 
-int cree_processus(const char * name, void (*code)(void)) {
+int cree_processus(const char * name, int prio, void (*code)(void)) {
 
     uint32_t pid;
 
@@ -60,7 +64,7 @@ int cree_processus(const char * name, void (*code)(void)) {
 
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
-    process_tab[pid].prio = 1;
+    process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
     INIT_LINK(& (process_tab[pid].chain));
 
     strcpy( process_tab[pid].name, name);

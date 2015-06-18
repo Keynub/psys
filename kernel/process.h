@@ -36,7 +36,7 @@ bool est_vivant();
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/);
 
-int cree_processus(const char * name, void (*code)(void));
+int cree_processus(const char * name, int prio, void (*code)(void));
 
 
 #endif

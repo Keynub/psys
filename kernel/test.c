@@ -48,7 +48,7 @@ void test_terminaison(void) {
     for (int i = 0; i < 20; i++) {
         printf("i = %d [%s] pid = %i\n",i, mon_nom(), mon_pid());
         sti();
-        for (int32_t i = 0; i < 10000000; i++) {}
+        for (int32_t i = 0; i < 1000000000; i++) {}
         cli();
     }
 
@@ -58,10 +58,10 @@ void idle()
 {
 	unsigned long i;
 	while (1){
-		printf("A\n");
+		printf("%s\n", mon_nom());
 		sti();
 
-		for (i = 0; i < 5000000; i++);
+		for (i = 0; i < 500000000; i++);
 		cli();
 	}
 }
@@ -70,10 +70,10 @@ void prog1()
 {
 	unsigned long i;
 	while (1){
-		printf("B\n");
+		printf("%s\n", mon_nom());
 		sti();
 
-		for (i = 0; i < 5000000; i++);
+		for (i = 0; i < 500000000; i++);
 		cli();
 	}
 
