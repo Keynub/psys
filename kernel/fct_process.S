@@ -20,3 +20,17 @@ ctx_sw:
     movl 16(%eax), %edi
     # on passe la main au nouveau processus
     ret
+
+.globl exitlol
+exitlol:
+# récupérer %eax, le stocker quelque part pour papa, appeler terminaison
+
+    # TODO offrir %eax pour la fête des pères (avec Sophie la girafe <3)
+    # sauvez eax dans process -> retval
+    movl cur_proc, %ecx
+    movl %eax, (%ecx)
+    # ça c'est fait
+
+    call terminaison
+
+    # ne retourne jamais

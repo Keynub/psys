@@ -11,6 +11,7 @@
 enum {RUNNING, WAITING, BLOCKED_SEM, BLOCKED_IO, BLOCKED_CHILD, SLEEP, ZOMBIE };
 
 typedef struct {
+    int retval; // /!\ CECI DOIT RESTER LE PREMIER ATTRIBUT SINON ON VA AVOIR DES PROBLÈMES EN ASSEMBLEUR !
     int16_t pid;
     char name[NAME_SIZE];
     uint8_t state;
@@ -19,7 +20,15 @@ typedef struct {
     bool vivant;
     link chain;
     int prio;
+    int16_t pid_pere;
+
 } process_t;
+
+typedef struct {
+   int16_t pid;
+    link chain;
+    int prio;
+} pidcell_t;
 
 void ctx_sw(uint32_t * reg1, uint32_t * reg2);
 
@@ -29,6 +38,8 @@ char* mon_nom();
 
 int16_t mon_pid();
 
+int16_t mon_papa();
+
 bool est_vivant();
 
 /* Gère la terminaison d'un processus, */
@@ -37,6 +48,10 @@ bool est_vivant();
 void terminaison(/*int retval*/);
 
 int cree_processus(const char * name, int prio, void (*code)(void));
+
+void exitlol();
+
+int waitpid(int pid, int *retvalp);
 
 
 #endif

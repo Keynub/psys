@@ -44,24 +44,33 @@ void prog1(void) {
 }*/
 
 void test_terminaison(void) {
-
     for (int i = 0; i < 20; i++) {
-        printf("i = %d [%s] pid = %i\n",i, mon_nom(), mon_pid());
+        printf("i = %d [%s] pid = %i pidp = %i\n",i, mon_nom(), mon_pid(), mon_papa());
+        cree_processus("termm", 1, &(sous_fifre));
+        cree_processus("termm", 1, &(sous_fifre));
         sti();
-        for (int32_t i = 0; i < 1000000000; i++) {}
+        for (int32_t i = 0; i < 50000000; i++) {}
         cli();
     }
 
 }
 
+void sous_fifre(void) {
+    printf("coucou je suis %d mon papa c'est %d\n", mon_pid(), mon_papa());
+}
+
 void idle()
 {
 	unsigned long i;
+		printf("%s je lance termm\n", mon_nom());
+    int pidf = cree_processus("termm", 1, &(test_terminaison));
+    int retvalp;
+    waitpid(pidf, &retvalp);
 	while (1){
 		printf("%s\n", mon_nom());
 		sti();
 
-		for (i = 0; i < 500000000; i++);
+		for (i = 0; i < 50000000; i++);
 		cli();
 	}
 }
@@ -73,7 +82,7 @@ void prog1()
 		printf("%s\n", mon_nom());
 		sti();
 
-		for (i = 0; i < 500000000; i++);
+		for (i = 0; i < 50000000; i++);
 		cli();
 	}
 

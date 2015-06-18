@@ -31,6 +31,10 @@ int16_t mon_pid(){
     return cur_proc -> pid;
 }
 
+int16_t mon_papa(){
+    return cur_proc -> pid_pere;
+}
+
 bool est_vivant(){
     return cur_proc -> vivant;
 }
@@ -40,39 +44,51 @@ bool est_vivant(){
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/){
     cur_proc -> vivant = false;
-	push(&l, cur_proc -> pid);
+    pidcell_t freed;
+    freed.pid = mon_pid();
+    freed.prio = 1;
+    INIT_LINK(&freed.chain);
+    queue_add(&freed, &used_pid, pidcell_t, chain, prio);
   // TODO valeur de retour pour waitpid
+  // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
+  // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
+
     ordonnance();
+}
+
+int waitpid(int pid, int *retvalp) {
+    return *retvalp + pid;
 }
 
 int cree_processus(const char * name, int prio, void (*code)(void)) {
 
     uint32_t pid;
 
-    if (l!=NULL){
-        pid = *(pop(&l));
-    }
-    else{
+    if (!queue_empty(&used_pid)){
+        pidcell_t * pidcell = queue_out(&used_pid, pidcell_t, chain);
+        pid = pidcell -> pid;
+    } else {
         if(last_pid == MAX_NB_PROCESS)
             return -1;
         else
         pid = last_pid ++;
     }
-  
 
 
-
+    process_tab[pid].pid_pere = mon_pid(); // fail
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
     process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
+
     INIT_LINK(& (process_tab[pid].chain));
+
 
     strcpy( process_tab[pid].name, name);
 
     process_tab[pid].state = WAITING;
     process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -2]);
     process_tab[pid].stack[STACK_SIZE - 2] = (uint32_t) (code);
-    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) &(terminaison);
+    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) &(exitlol);
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 

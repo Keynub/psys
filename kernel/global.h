@@ -11,6 +11,7 @@
  process_t process_tab [MAX_NB_PROCESS];
  process_t * cur_proc;
  link process_queue;
+ link used_pid;
  uint32_t last_pid;
  uint32_t last_index;
  uint32_t cmpt;
