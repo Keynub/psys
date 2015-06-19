@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include <string.h>
 #include "queue.h"
+#include "mem.h"
 
 void ordonnance(){
 
@@ -39,6 +40,30 @@ bool est_vivant(){
     return cur_proc -> vivant;
 }
 
+bool has_son(int pid) {
+    pidcell_t * ptr_elem;
+    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
+        if(ptr_elem -> pid == pid) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int waitpid(int pid, int *retvalp) {
+    // trouver le fils qui correspond au pid
+    if(has_son(pid)) {
+        while(process_tab[pid].vivant) {
+            cur_proc -> state = BLOCKED_CHILD;
+            ordonnance();
+        }
+        *retvalp = process_tab[pid].retval;
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processus père */
 /* quand il appelle waitpid. */
@@ -56,11 +81,7 @@ void terminaison(/*int retval*/){
     ordonnance();
 }
 
-int waitpid(int pid, int *retvalp) {
-    return *retvalp + pid;
-}
-
-int cree_processus(const char * name, int prio, void (*code)(void)) {
+int cree_processus(const char * name, int prio, int (*code)(void)) {
 
     uint32_t pid;
 
@@ -82,6 +103,14 @@ int cree_processus(const char * name, int prio, void (*code)(void)) {
 
     INIT_LINK(& (process_tab[pid].chain));
 
+
+    pidcell_t * newson = mem_alloc(sizeof(pidcell_t));
+    newson->pid = pid;
+    newson->prio = 1;
+    INIT_LINK(&newson->chain);
+    queue_add(newson, &cur_proc -> enfants, pidcell_t, chain, prio);
+
+    INIT_LIST_HEAD(&process_tab[pid].enfants); // CHECK bien vide
 
     strcpy( process_tab[pid].name, name);
 

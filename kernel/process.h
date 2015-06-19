@@ -21,7 +21,7 @@ typedef struct {
     link chain;
     int prio;
     int16_t pid_pere;
-
+    link enfants;
 } process_t;
 
 typedef struct {
@@ -47,7 +47,7 @@ bool est_vivant();
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/);
 
-int cree_processus(const char * name, int prio, void (*code)(void));
+int cree_processus(const char * name, int prio, int (*code)(void));
 
 void exitlol();
 

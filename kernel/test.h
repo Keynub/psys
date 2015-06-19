@@ -2,8 +2,8 @@
 #define TEST_H
 
 void idle();
-void prog1();
-void test_terminaison();
-void sous_fifre();
-void prog2();
+int prog1();
+int test_terminaison();
+int sous_fifre();
+int prog2();
 #endif

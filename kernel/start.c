@@ -23,40 +23,44 @@ void kernel_start(void)
 	p = CLOCKFREQ/SCHEDFREQ;
     l = NULL;
 
-    process_queue.prev = & process_queue;
-    process_queue.next = & process_queue;
-
-    used_pid.prev = & used_pid;
-    used_pid.next = & used_pid;
-
     last_pid = 0;
     last_index = 0;
 
+    INIT_LIST_HEAD(&process_queue);
+    INIT_LIST_HEAD(&used_pid);
 
-    process_t idle_p;
-    idle_p.pid = last_pid ++;
-    idle_p.pid_pere = idle_p.pid;
-    idle_p.vivant = true;
-    strcpy(idle_p.name, "idle_p");
-    idle_p.state = RUNNING;
-    idle_p.prio = 1;
-    INIT_LINK(& idle_p.chain);
+    uint32_t index = last_pid ++;
 
 
-    process_tab[last_index ++] = idle_p;
+    process_tab[index].pid = index;
+    process_tab[index].pid_pere = index;
+    process_tab[index].vivant = true;
+    strcpy(process_tab[index].name, "idle_p");
+    process_tab[index].state = RUNNING;
+    process_tab[index].prio = 1;
+    INIT_LINK(& process_tab[index].chain);
+    INIT_LIST_HEAD(&process_tab[index].enfants); // CHECK bien vide
 
+    pidcell_t * ptr_elem;
 
-    cur_proc = &process_tab[0];
+    cur_proc = &process_tab[index];
+
+    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
+        printf("foreach in start\n");
+        printf("pid_son : %d\n", ptr_elem -> pid);
+    }
 
     //    cree_processus("termm", &(test_terminaison));
-
-
 
     
     regler_frequence_horloge();
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
+    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
+        printf("foreach before idle\n");
+        printf("pid_son : %d\n", ptr_elem -> pid);
+    }
 
 
     idle();

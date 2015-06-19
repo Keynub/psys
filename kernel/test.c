@@ -43,29 +43,33 @@ void prog1(void) {
     }
 }*/
 
-void test_terminaison(void) {
+int test_terminaison(void) {
     for (int i = 0; i < 20; i++) {
         printf("i = %d [%s] pid = %i pidp = %i\n",i, mon_nom(), mon_pid(), mon_papa());
-        cree_processus("termm", 1, &(sous_fifre));
+        int pidf = cree_processus("termm", 1, &(sous_fifre));
         cree_processus("termm", 1, &(sous_fifre));
         sti();
         for (int32_t i = 0; i < 50000000; i++) {}
         cli();
+        printf("retour premier fils : %d\n", process_tab[pidf].retval);
     }
+    return 3;
 
 }
 
-void sous_fifre(void) {
+int sous_fifre(void) {
     printf("coucou je suis %d mon papa c'est %d\n", mon_pid(), mon_papa());
+    return 341234;
 }
 
 void idle()
 {
 	unsigned long i;
-		printf("%s je lance termm\n", mon_nom());
+    printf("%s je lance termm\n", mon_nom());
     int pidf = cree_processus("termm", 1, &(test_terminaison));
     int retvalp;
     waitpid(pidf, &retvalp);
+    printf("termm m'a renvoyé %d\n", retvalp);
 	while (1){
 		printf("%s\n", mon_nom());
 		sti();
@@ -75,7 +79,7 @@ void idle()
 	}
 }
 
-void prog1()
+int prog1()
 {
 	unsigned long i;
 	while (1){
@@ -85,6 +89,7 @@ void prog1()
 		for (i = 0; i < 50000000; i++);
 		cli();
 	}
+	return 4;
 
 }
 
