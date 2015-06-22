@@ -33,9 +33,20 @@ void kernel_start(void)
     uint32_t index = last_pid ++;
 
     int a = pcreate(3);
+
     int count = 3;
     pcount(a,&count);
     preset(a);
+
+
+    int answer = 0;
+
+    psend(a, 23);
+
+    preceive(a, &answer);
+
+    printf("ANSWER %d", answer);
+
     pdelete(a);
 
     process_tab[index].pid = index;
