@@ -110,7 +110,7 @@ int cree_processus(const char * name, int prio, int (*code)(void)) {
     INIT_LINK(&newson->chain);
     queue_add(newson, &cur_proc -> enfants, pidcell_t, chain, prio);
 
-    INIT_LIST_HEAD(&process_tab[pid].enfants); // CHECK bien vide
+    INIT_LIST_HEAD(&process_tab[pid].enfants);
 
     strcpy( process_tab[pid].name, name);
 
