@@ -30,7 +30,9 @@ if(cmpt==p){
 }
 else
 	cmpt++;
-		
+
+	// TODO table des processus en attente d'un t à parcourir
+
 }
 
 void init_traitant_IT32(void (*traitant)(void))

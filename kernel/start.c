@@ -32,7 +32,8 @@ void kernel_start(void)
 
     uint32_t index = last_pid ++;
 
-    pcreate(3);
+    int a = pcreate(3);
+    pdelete(a);
 
     process_tab[index].pid = index;
     process_tab[index].pid_pere = index;
