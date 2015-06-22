@@ -1,6 +1,8 @@
 #ifndef _SYNC_QUEUE_H_
 #define _SYNC_QUEUE_H_
 
+#include "process.h"
+#include "queue.h"
 
 // synchronization queue using queue.h bleeding internally screaming internally
 

@@ -6,6 +6,7 @@
 #include "process.h"
 #include "list.h"
 #include "queue.h"
+#include "sync_queue.h"
 
 
  process_t process_tab [MAX_NB_PROCESS];
