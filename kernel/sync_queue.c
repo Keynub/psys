@@ -8,12 +8,12 @@ int pcreate(int count){
         return -1;
     }
 
-    last_queue ++;
-    sync_queue_t* queue = &(queue_tab[last_queue]);
+    int tmp = last_queue ++;
+    sync_queue_t* queue = &(queue_tab[tmp]);
     queue->capacity = count;
     queue->length = 0;
     INIT_LIST_HEAD(&(queue->messages));
     INIT_LIST_HEAD(&(queue->waiting_proc));
 
-    return 0;
+    return tmp;
 }
