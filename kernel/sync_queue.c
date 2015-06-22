@@ -47,3 +47,56 @@ int pdelete(int fid) {
 
     return 0;
 }
+
+int pcount(int fid, int *count){
+    if(fid < 0 || fid > NB_QUEUE - 1){
+        return -1;
+    }
+    if(queue_tab[fid].length == 0){
+        pidcell_t * ptr_elem;
+        int numb_processes = 0;
+        queue_for_each(ptr_elem, &(queue_tab[fid].waiting_proc), pidcell_t, chain) {
+            numb_processes++;
+        }
+        *count = numb_processes;
+    }
+    else{
+        //Number of processes
+        pidcell_t * ptr_proc;
+        int numb_processes = 0;
+        queue_for_each(ptr_proc, &(queue_tab[fid].waiting_proc), pidcell_t, chain) {
+            numb_processes++;
+        }
+        int tmp1 = numb_processes;
+
+        //Number of messages
+        message_t * ptr_msg;
+        int numb_msgs = 0;
+        queue_for_each(ptr_msg, &(queue_tab[fid].messages), message_t, chain) {
+            numb_msgs++;
+        }
+        int tmp2 = numb_msgs;
+    *count = tmp1 + tmp2;
+    }
+    return 0;
+}
+
+int preset(int fid){
+    if(fid < 0 || fid > NB_QUEUE - 1){
+        return -1;
+    }
+
+    //Deletes messages
+        message_t * ptr_msg;
+        queue_for_each(ptr_msg, &(queue_tab[fid].messages), message_t, chain) {
+            queue_del(ptr_msg, chain);
+        }
+
+    //Activates waiting processes
+    pidcell_t * ptr_proc;
+        queue_for_each(ptr_proc, &(queue_tab[fid].waiting_proc), pidcell_t, chain) {
+            process_tab[ptr_proc->pid].state = WAITING;
+             queue_del(ptr_proc, chain);
+        }
+    return 0;
+}
