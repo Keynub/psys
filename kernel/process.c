@@ -11,10 +11,15 @@ void ordonnance(){
     if(queue_empty(&process_queue)) { return; }
 
     process_t * next_proc = queue_out(&process_queue, process_t, chain);
-
+    // TODO check for process waiting because if not, gets out
     if(est_vivant()) {
         queue_add(cur_proc, &process_queue, process_t, chain, prio);
         cur_proc -> state = WAITING;
+    }
+
+    while (next_proc -> state != WAITING && next_proc -> state != BLOCKED_CHILD) {
+        queue_add(next_proc, &process_queue, process_t, chain, prio);
+        next_proc = queue_out(&process_queue, process_t, chain);
     }
 
     next_proc -> state = RUNNING;
