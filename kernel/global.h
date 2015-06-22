@@ -14,6 +14,7 @@
  process_t * cur_proc;
  link process_queue;
  link used_pid;
+ int32_t last_queue;
  uint32_t last_pid;
  uint32_t last_index;
  uint32_t cmpt;

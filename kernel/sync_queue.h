@@ -4,7 +4,7 @@
 #include "process.h"
 #include "queue.h"
 
-// synchronization queue using queue.h bleeding internally screaming internally
+// synchronization queue using queue.h internally
 
 typedef struct {
     // two queues, messages can only contain up to capacity, length contains the current number of messages

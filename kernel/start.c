@@ -25,12 +25,14 @@ void kernel_start(void)
 
     last_pid = 0;
     last_index = 0;
+    last_queue = -1;
 
     INIT_LIST_HEAD(&process_queue);
     INIT_LIST_HEAD(&used_pid);
 
     uint32_t index = last_pid ++;
 
+    pcreate(3);
 
     process_tab[index].pid = index;
     process_tab[index].pid_pere = index;
