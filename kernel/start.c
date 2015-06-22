@@ -34,7 +34,13 @@ void kernel_start(void)
 
     int a = pcreate(3);
 
+    int answer = 0;
+
     psend(a, 23);
+
+    preceive(a, &answer);
+
+    printf("ANSWER %d", answer);
 
     pdelete(a);
 
