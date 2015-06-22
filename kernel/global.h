@@ -9,6 +9,7 @@
 
 
  process_t process_tab [MAX_NB_PROCESS];
+ sync_queue_t queue_tab [NB_QUEUE];
  process_t * cur_proc;
  link process_queue;
  link used_pid;

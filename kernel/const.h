@@ -27,4 +27,6 @@
 #define STACK_SIZE 512
 #define MAX_NB_PROCESS 12
 #define MAX_PRIO 256
+
+#define NB_QUEUE 20
 #endif
