@@ -37,6 +37,10 @@ int16_t mon_pid(){
     return cur_proc -> pid;
 }
 
+int getpid() {
+    return mon_pid();
+}
+
 int16_t mon_papa(){
     return cur_proc -> pid_pere;
 }
