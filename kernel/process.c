@@ -132,3 +132,25 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     return process_tab[pid].pid;
 }
+
+int getprio(int pid) {
+    return process_tab[pid].prio;
+}
+
+bool in_proc_queue(int pid) {
+    return process_tab[pid].chain.next != NULL || process_tab[pid].chain.prev != NULL;
+}
+
+int chprio(int pid, int newprio) {
+    // TODO check pid
+    int oldprio = getprio(pid);
+    if(oldprio != pid) {
+        process_tab[pid].prio = newprio;
+        if(in_proc_queue(pid)){
+            queue_del(& process_tab[pid], chain);
+            queue_add(& process_tab[pid], & process_queue, process_t, chain, prio);
+        }
+    }
+
+    return oldprio;
+}
