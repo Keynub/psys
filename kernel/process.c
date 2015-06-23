@@ -6,7 +6,6 @@
 #include "mem.h"
 
 void ordonnance(){
-
     // if queue is empty, keep executing same process
     if(queue_empty(&process_queue)) { return; }
 
@@ -79,7 +78,6 @@ void terminaison(/*int retval*/){
     freed.prio = 1;
     INIT_LINK(&freed.chain);
     queue_add(&freed, &used_pid, pidcell_t, chain, prio);
-  // TODO valeur de retour pour waitpid
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
 

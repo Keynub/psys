@@ -25,7 +25,6 @@ ctx_sw:
 exitlol:
 # récupérer %eax, le stocker quelque part pour papa, appeler terminaison
 
-    # TODO offrir %eax pour la fête des pères (avec Sophie la girafe <3)
     # sauvez eax dans process -> retval
     movl cur_proc, %ecx
     movl %eax, (%ecx)
