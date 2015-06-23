@@ -57,9 +57,7 @@ void repartiteur() {
     a = pcreate(10);
     b = pcreate(10);
     c = pcreate(10);
-    cree_processus("station3", 1,  &station3);
-    cree_processus("station2", 1,  &station2);
-    cree_processus("station1", 1,  &station1);
+    // TODO créer process avec start
     printf("ca c'est fait\n");
     while(1) {
 		sti();
