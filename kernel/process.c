@@ -1,6 +1,7 @@
 #include "process.h"
 #include "global.h"
 #include "stdio.h"
+#include "const.h"
 #include <string.h>
 #include "queue.h"
 #include "mem.h"
@@ -68,19 +69,22 @@ int waitpid(int pid, int *retvalp) {
     }
 }
 
+void delete_queue( process_t * p){
+    p -> vivant = false;
+    pidcell_t freed;
+    freed.pid = p->pid;
+    freed.prio = 1;
+    INIT_LINK(&freed.chain);
+    queue_add(&freed, &used_pid, pidcell_t, chain, prio);
+}
+
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processus père */
 /* quand il appelle waitpid. */
 void terminaison(/*int retval*/){
-    cur_proc -> vivant = false;
-    pidcell_t freed;
-    freed.pid = mon_pid();
-    freed.prio = 1;
-    INIT_LINK(&freed.chain);
-    queue_add(&freed, &used_pid, pidcell_t, chain, prio);
+    delete_queue(cur_proc);
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
-
     ordonnance();
 }
 
@@ -154,3 +158,34 @@ int chprio(int pid, int newprio) {
 
     return oldprio;
 }
+
+int kill(int pid){
+
+
+  if (pid<0 || pid >= MAX_NB_PROCESS || ! process_tab[pid].vivant){
+    return -1;
+  }
+  else{
+    queue_del(& process_tab[pid], chain);
+   
+    if (process_tab[pid].state == BLOCKED_SEM){
+      //TODO SEM
+    }
+    else 
+      if(process_tab[pid].state == BLOCKED_IO){
+	//TODO IO
+      }
+      else 
+	if(process_tab[pid].state == BLOCKED_CHILD){
+	  //TODO GestionFils
+    }
+    delete_queue(&process_tab[pid]);
+    return 0;
+  }
+
+ 
+
+    
+
+}
+

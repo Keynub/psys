@@ -57,4 +57,7 @@ int chprio(int pid, int newprio);
 
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg);
 
+int kill(int pid);
+
+
 #endif
