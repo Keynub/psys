@@ -8,6 +8,7 @@
 #include "ecran.h"
 #include "queue.h"
 #include "test_token_ring.h"
+#include "test_bak.h"
 
 /*
  *   int16_t pid;
@@ -17,7 +18,7 @@
     uint32_t stack[STACK_SIZE];
  */
 
-int test_run(int n);
+//int test_run(int n);
 
 void kernel_start(void)
 {
@@ -49,6 +50,7 @@ void kernel_start(void)
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
+    idle();
 
 
      while(1)

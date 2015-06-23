@@ -53,5 +53,6 @@ void exitlol();
 
 int waitpid(int pid, int *retvalp);
 
+int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg);
 
 #endif
