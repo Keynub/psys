@@ -4,10 +4,11 @@
 #include "horloge.h"
 #include "global.h"
 #include "string.h"
-#include "test.h"
 #include "process.h"
 #include "ecran.h"
 #include "queue.h"
+#include "test_token_ring.h"
+#include "test_bak.h"
 
 /*
  *   int16_t pid;
@@ -16,6 +17,8 @@
     uint32_t reg[5];
     uint32_t stack[STACK_SIZE];
  */
+
+//int test_run(int n);
 
 void kernel_start(void)
 {
@@ -32,23 +35,6 @@ void kernel_start(void)
 
     uint32_t index = last_pid ++;
 
-    int a = pcreate(3);
-
-    int count = 3;
-    pcount(a,&count);
-    preset(a);
-
-
-    int answer = 0;
-
-    psend(a, 23);
-
-    preceive(a, &answer);
-
-    printf("ANSWER %d", answer);
-
-    pdelete(a);
-
     process_tab[index].pid = index;
     process_tab[index].pid_pere = index;
     process_tab[index].vivant = true;
@@ -57,8 +43,6 @@ void kernel_start(void)
     process_tab[index].prio = 1;
     INIT_LINK(& process_tab[index].chain);
     INIT_LIST_HEAD(&process_tab[index].enfants); // CHECK bien vide
-
-    pidcell_t * ptr_elem;
 
     cur_proc = &process_tab[index];
 
@@ -70,18 +54,13 @@ void kernel_start(void)
      printf("TEST EXIT #####################\n");
     cree_processus("termm", &(test_exit));
     printf("FIN EXIT ########################\n");
-    
+
     regler_frequence_horloge();
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
-    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
-        printf("foreach before idle\n");
-        printf("pid_son : %d\n", ptr_elem -> pid);
-    }
-
-
     idle();
+
 
      while(1)
 	  hlt();

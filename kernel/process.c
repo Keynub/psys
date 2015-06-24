@@ -1,12 +1,12 @@
 #include "process.h"
 #include "global.h"
 #include "stdio.h"
+#include "const.h"
 #include <string.h>
 #include "queue.h"
 #include "mem.h"
 
 void ordonnance(){
-
     // if queue is empty, keep executing same process
     if(queue_empty(&process_queue)) { return; }
 
@@ -35,6 +35,10 @@ char* mon_nom(){
 
 int16_t mon_pid(){
     return cur_proc -> pid;
+}
+
+int getpid() {
+    return mon_pid();
 }
 
 int16_t mon_papa(){
@@ -69,34 +73,33 @@ int waitpid(int pid, int *retvalp) {
     }
 }
 
-/* Gère la terminaison d'un processus, */
-/* la valeur retval est passée à  */
-/* la fonction exit */
-void terminaison(){
-    cur_proc -> vivant = false;
+
+void delete_queue( process_t * p){
+    p -> vivant = false;
     pidcell_t freed;
-    freed.pid = mon_pid();
+    freed.pid = p->pid;
     freed.prio = 1;
     INIT_LINK(&freed.chain);
     queue_add(&freed, &used_pid, pidcell_t, chain, prio);
+}
 
+/* Gère la terminaison d'un processus, */
+/* la valeur retval est passée au processus père */
+/* quand il appelle waitpid. */
+void terminaison(/*int retval*/){
+    delete_queue(cur_proc);
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
-
     ordonnance();
 
 }
 
-void exit(int retval){
-   terminaison();
-   if(mon_papa() == NULL){
-        kill(mon_pid);
-   }
-   while(1){}
+
+void rienfaire(unsigned long ssize) {
+    ssize = ssize;
 }
 
-int cree_processus(const char * name, int prio, int (*code)(void)) {
-
+int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
     uint32_t pid;
 
     if (!queue_empty(&used_pid)){
@@ -109,6 +112,8 @@ int cree_processus(const char * name, int prio, int (*code)(void)) {
         pid = last_pid ++;
     }
 
+    // TODO utiliser ssize
+    rienfaire(ssize);
 
     process_tab[pid].pid_pere = mon_pid(); // fail
     process_tab[pid].pid = pid;
@@ -129,13 +134,72 @@ int cree_processus(const char * name, int prio, int (*code)(void)) {
     strcpy( process_tab[pid].name, name);
 
     process_tab[pid].state = WAITING;
-    process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -2]);
-    process_tab[pid].stack[STACK_SIZE - 2] = (uint32_t) (code);
-    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) &(exitlol);
+    process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -3]);
+    process_tab[pid].stack[STACK_SIZE - 3] = (uint32_t) (pt_func);
+    process_tab[pid].stack[STACK_SIZE - 2] = (uint32_t) &(exitlol);
+    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) (arg);
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 
     return process_tab[pid].pid;
+}
+
+int getprio(int pid) {
+    return process_tab[pid].prio;
+}
+
+bool in_proc_queue(int pid) {
+    return process_tab[pid].chain.next != NULL || process_tab[pid].chain.prev != NULL;
+}
+
+int chprio(int pid, int newprio) {
+    // TODO check pid
+    int oldprio = getprio(pid);
+    if(oldprio != pid) {
+        process_tab[pid].prio = newprio;
+        if(in_proc_queue(pid)){
+            queue_del(& process_tab[pid], chain);
+            queue_add(& process_tab[pid], & process_queue, process_t, chain, prio);
+        }
+    }
+
+    return oldprio;
+}
+
+int kill(int pid){
+
+
+  if (pid<0 || pid >= MAX_NB_PROCESS || ! process_tab[pid].vivant){
+    return -1;
+  }
+  else{
+    queue_del(& process_tab[pid], chain);
+   
+    if (process_tab[pid].state == BLOCKED_SEM){
+      //TODO SEM
+    }
+    else 
+      if(process_tab[pid].state == BLOCKED_IO){
+	//TODO IO
+      }
+      else 
+	if(process_tab[pid].state == BLOCKED_CHILD){
+	  //TODO GestionFils
+    }
+    delete_queue(&process_tab[pid]);
+    return 0;
+  }
+
+
+void exit(int retval){
+   terminaison();
+   if(mon_papa() == NULL){
+        kill(mon_pid);
+   }
+   while(1){}
+}
+
+    
 
 }
 

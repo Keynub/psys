@@ -47,13 +47,19 @@ bool est_vivant();
 /* quand il appelle waitpid. */
 int terminaison();
 
-int cree_processus(const char * name, int prio, int (*code)(void));
-
 void exitlol();
 
 void exit(int retval);
 
 int waitpid(int pid, int *retvalp);
+
+int getprio(int pid);
+
+int chprio(int pid, int newprio);
+
+int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg);
+
+int kill(int pid);
 
 
 #endif
