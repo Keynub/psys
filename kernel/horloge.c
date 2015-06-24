@@ -11,16 +11,15 @@
 
 void tic_PIT()
 {
-   /* horloge ++;
-    uint32_t horlogetemp = horloge;
-    
+    horloge ++;
+   /*
+
     char chaine [20];
     // format = HH:MM:SS
     // double units
     
     sprintf(chaine, "%02u:%02u:%02u", horlogetemp/3600, (horlogetemp%3600)/60, horlogetemp%60);
     affiche_haut_gauche(chaine);*/
-
 if(cmpt==p){
 	cmpt=0;	
 	ordonnance();
@@ -76,3 +75,14 @@ void demasque_IRQ()
 
 void demasque_IRQ();
 
+unsigned long current_clock()
+{
+    return horloge;
+}
+
+/*Retourne dans *quartz la fréquence du quartz du système et dans *ticks le nombre d'oscillations du quartz entre chaque interruption. */
+void clock_settings(unsigned long *quartz, unsigned long *ticks)
+{
+    * quartz = QUARTZ;
+    *ticks = CLOCKFREQ;
+}

@@ -3,8 +3,9 @@
 #include "stdio.h"
 #include "const.h"
 #include <string.h>
-#include "queue.h"
+#include "horloge.h"
 #include "mem.h"
+#include "../shared/queue.h"
 #include "cpu.h"
 #include <stdio.h>
 
@@ -29,6 +30,7 @@ void ordonnance(){
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
 
     cur_proc = next_proc;
+
     ctx_sw(tmp -> reg, next_proc -> reg);
 }
 
@@ -110,6 +112,7 @@ void rienfaire(unsigned long ssize) {
 }
 
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
+  printf("je suis start et je fous la merde\n");
     uint32_t pid;
 
 
@@ -126,6 +129,7 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     // TODO utiliser ssize
     rienfaire(ssize);
+
     process_tab[pid].pid_pere = mon_pid();
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
@@ -142,6 +146,7 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     strcpy( process_tab[pid].name, name);
 
+  printf("coucou3\n");
     process_tab[pid].state = WAITING;
     process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -3]);
     process_tab[pid].stack[STACK_SIZE - 3] = (uint32_t) (pt_func);
@@ -149,6 +154,7 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
     process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) (arg);
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
+
 
     if(prio > getprio(getpid())) {
         ordonnance();
@@ -181,6 +187,7 @@ int chprio(int pid, int newprio) {
 }
 
 int kill(int pid){
+
   if (pid<0 || pid >= MAX_NB_PROCESS || ! process_tab[pid].vivant){
     return -1;
   } else{

@@ -1,6 +1,7 @@
 #include "fake.h"
 #include "ecran.h"
 
+
 void clock_settings(unsigned long *quartz, unsigned long *ticks){quartz = ticks;}
 unsigned long current_clock(){return 0;}
 

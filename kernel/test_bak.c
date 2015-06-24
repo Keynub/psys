@@ -3,6 +3,8 @@
 #include "process.h"
 #include "global.h"
 #include "const.h"
+#include "horloge.h"
+#include "stddef.h"
 #include <stdio.h>
 
 
@@ -27,22 +29,29 @@ void prog1(void)
 */
 
 
-/*void idle(void)
+void idle(void)
 {
-    for (;;) {
+    start(&prog1,5,128,"prog1",NULL);
+    for (int a=0 ;a<5;a++) {
+        printf("idle %lu", current_clock());
         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance();
+        sti();
+
+        for (int i = 0; i < 50000000; i++);
+        cli();
     }
 }
 
-void prog1(void) {
-    for (;;) {
+int prog1(void) {
+    for (int a=0 ;a<5;a++) {
+        printf("prog1 %lu", current_clock());
         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance(); 
+        sti();
+        for (int i = 0; i < 50000000; i++);
+        cli();
     }
-}*/
+    return 1;
+}
 
 int test_exit(void * arg) {
 arg++;
@@ -79,6 +88,7 @@ for (int i = 0; i < 20; i++) {
     return a;
 }*/
 
+/*
 int idle(void * arg)
 {
     (void)arg;
@@ -98,6 +108,5 @@ int idle(void * arg)
 		sti();
 		for (i = 0; i < 50000000; i++);
 		cli();
-	}*/
-}
-
+	}
+}*/
