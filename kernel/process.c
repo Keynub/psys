@@ -70,20 +70,29 @@ int waitpid(int pid, int *retvalp) {
 }
 
 /* Gère la terminaison d'un processus, */
-/* la valeur retval est passée au processus père */
-/* quand il appelle waitpid. */
-void terminaison(/*int retval*/){
+/* la valeur retval est passée à  */
+/* la fonction exit */
+void terminaison(){
     cur_proc -> vivant = false;
     pidcell_t freed;
     freed.pid = mon_pid();
     freed.prio = 1;
     INIT_LINK(&freed.chain);
     queue_add(&freed, &used_pid, pidcell_t, chain, prio);
-  // TODO valeur de retour pour waitpid
+
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
 
     ordonnance();
+
+}
+
+void exit(int retval){
+   terminaison();
+   if(mon_papa() == NULL){
+        kill(mon_pid);
+   }
+   while(1){}
 }
 
 int cree_processus(const char * name, int prio, int (*code)(void)) {

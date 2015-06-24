@@ -67,8 +67,9 @@ void kernel_start(void)
         printf("pid_son : %d\n", ptr_elem -> pid);
     }
 
-    //    cree_processus("termm", &(test_terminaison));
-
+     printf("TEST EXIT #####################\n");
+    cree_processus("termm", &(test_exit));
+    printf("FIN EXIT ########################\n");
     
     regler_frequence_horloge();
     demasque_IRQ();

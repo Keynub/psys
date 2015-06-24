@@ -43,6 +43,22 @@ void prog1(void) {
     }
 }*/
 
+int test_exit(void) {
+        printf("i = %d [%s] pid = %i pidp = %i\n",i, mon_nom(), mon_pid(), mon_papa());
+        int pidf = cree_processus("termm", 1, &(sous_fifre));
+        cree_processus("termm", 1, &(sous_fifre));
+        sti();
+        for (int32_t i = 0; i < 50000000; i++) {}
+        cli();
+        printf("retour premier fils : %d\n", process_tab[pidf].retval);
+        for (int32_t i = 0; i < 50000000; i++) {}
+        int retval = 5;
+        exit(retval);
+        printf("VALEUR DE RETOUR : %d\n", retval);
+    return 3;
+
+}
+
 int test_terminaison(void) {
     for (int i = 0; i < 20; i++) {
         printf("i = %d [%s] pid = %i pidp = %i\n",i, mon_nom(), mon_pid(), mon_papa());
