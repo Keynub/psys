@@ -223,7 +223,8 @@ int start(int (*pt_func)(void *), unsigned long ssize, int prio, const char *nam
     uint32_t stacksize = ssize + 3;
     uint32_t real_stacksize = sizeof(uint32_t) * stacksize;
 
-    if(stacksize > STACK_SIZE_MAX) {
+    printf("%lu %d \n", ssize, stacksize);
+    if(stacksize >= STACK_SIZE_MAX || ssize >= STACK_SIZE_MAX) {
         return -1;
     }
 

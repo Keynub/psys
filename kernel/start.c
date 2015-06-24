@@ -61,7 +61,6 @@ void kernel_start(void)
     start(&(test_exit), size, 5, nom, NULL);
     idle((void*)1);
     printf("FIN EXIT ########################\n");*/
-     while(1)
 	  hlt();
 
     return;
