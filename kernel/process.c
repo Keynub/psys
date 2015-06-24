@@ -5,6 +5,8 @@
 #include <string.h>
 #include "queue.h"
 #include "mem.h"
+#include "cpu.h"
+#include <stdio.h>
 
 void ordonnance(){
     // if queue is empty, keep executing same process
@@ -86,7 +88,7 @@ void delete_queue( process_t * p){
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processus père */
 /* quand il appelle waitpid. */
-void terminaison(/*int retval*/){
+void terminaison(){
     delete_queue(cur_proc);
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
@@ -192,11 +194,13 @@ int kill(int pid){
 
 
 void exit(int retval){
-   terminaison();
-   if(mon_papa() == NULL){
-        kill(mon_pid);
+printf("PLOUF\n")
+   process_tab[mon_pid()].retval = retval;
+   printf("NEW RETVAL : %d\n", process_tab[mon_pid()].retval);
+   kill(mon_pid());
+   while(1){
+   sti(); hlt(); cli();
    }
-   while(1){}
 }
 
     

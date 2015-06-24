@@ -45,7 +45,7 @@ bool est_vivant();
 /* Gère la terminaison d'un processus, */
 /* la valeur retval est passée au processurs père */
 /* quand il appelle waitpid. */
-int terminaison();
+void terminaison();
 
 void exitlol();
 

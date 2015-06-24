@@ -46,21 +46,17 @@ void kernel_start(void)
 
     cur_proc = &process_tab[index];
 
-    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
-        printf("foreach in start\n");
-        printf("pid_son : %d\n", ptr_elem -> pid);
-    }
-
-     printf("TEST EXIT #####################\n");
-    cree_processus("termm", &(test_exit));
-    printf("FIN EXIT ########################\n");
-
-    regler_frequence_horloge();
+    /*regler_frequence_horloge();
     demasque_IRQ();
-    init_traitant_IT32(traitant_IT_32);
+    init_traitant_IT32(traitant_IT_32);*/
 
     idle();
 
+     unsigned long size = 3;
+     const char* nom = "name";
+     printf("TEST EXIT #####################\n");
+     start(&(test_exit), size, 5, nom, NULL);
+     printf("FIN EXIT ########################\n");
 
      while(1)
 	  hlt();
