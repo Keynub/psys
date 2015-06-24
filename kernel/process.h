@@ -16,7 +16,7 @@ typedef struct {
     char name[NAME_SIZE];
     uint8_t state;
     uint32_t reg[5];
-    uint32_t stack[STACK_SIZE];
+    uint32_t * stack;
     bool vivant;
     link chain;
     int prio;
@@ -52,6 +52,8 @@ void exitlol();
 void exit(int retval);
 
 int waitpid(int pid, int *retvalp);
+
+void wait_clock(unsigned long clock);
 
 int getprio(int pid);
 

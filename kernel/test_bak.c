@@ -3,6 +3,8 @@
 #include "process.h"
 #include "global.h"
 #include "const.h"
+#include "horloge.h"
+#include "stddef.h"
 #include <stdio.h>
 
 
@@ -26,23 +28,16 @@ void prog1(void)
 }
 */
 
-
-/*void idle(void)
-{
-    for (;;) {
+int prog1(void) {
+    for (int a=0 ;a<5;a++) {
+        printf("prog1 %lu", current_clock());
         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance();
+        sti();
+        for (int i = 0; i < 50000000; i++);
+        cli();
     }
+    return 1;
 }
-
-void prog1(void) {
-    for (;;) {
-        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        for (int32_t i = 0; i < 100000000; i++);
-        ordonnance(); 
-    }
-}*/
 
 int test_exit(void * arg) {
 arg++;
@@ -79,6 +74,7 @@ for (int i = 0; i < 20; i++) {
     return a;
 }*/
 
+
 int idle(void * arg)
 {
     (void)arg;
@@ -86,18 +82,5 @@ int idle(void * arg)
 	while(1) {
 	    sti(); hlt(); cli();
 	}
-    /*printf("%s je lance termm\n", mon_nom());
-    int a = 42;
-    void * b = (void *) &a;
-    int pidf = start(&(sous_fifre), 4000, 192, "paramRetour", b);
-    int retvalp;
-    waitpid(pidf, &retvalp);
-    printf("termm m'a renvoyé %d\n", retvalp);
-	while (1){
-		printf("%s\n", mon_nom());
-		sti();
-		for (i = 0; i < 50000000; i++);
-		cli();
-	}*/
-}
 
+}

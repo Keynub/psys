@@ -11,4 +11,8 @@ void regler_frequence_horloge();
 
 void demasque_IRQ();
 
+unsigned long current_clock();
+
+void clock_settings(unsigned long *quartz, unsigned long *ticks);
+
 #endif

@@ -23,6 +23,7 @@ int test_run(int n);
 void kernel_start(void)
 {
 	cmpt = 0;
+	horloge=0;
 	p = CLOCKFREQ/SCHEDFREQ;
     l = NULL;
 
@@ -42,18 +43,18 @@ void kernel_start(void)
     process_tab[index].state = RUNNING;
     process_tab[index].prio = 128;
     INIT_LINK(& process_tab[index].chain);
-    INIT_LIST_HEAD(&process_tab[index].enfants); // CHECK bien vide
+    INIT_LIST_HEAD(&process_tab[index].enfants);
 
     cur_proc = &process_tab[index];
 
-    //regler_frequence_horloge();
+    regler_frequence_horloge();
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
 
-
-    test_run(1);
-/*    unsigned long size = 3;
+    test_run(6);
+/*
+    unsigned long size = 3;
     const char* nom = "name";
     printf("TEST EXIT #####################\n");
     start(&(test_exit), size, 5, nom, NULL);
