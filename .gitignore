@@ -13,6 +13,7 @@
 
 kernel/kernel.bin
 kernel/out/
+kernel/boot.pxe
 user/out/
 user/user.bin
 user/user.debug
