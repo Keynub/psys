@@ -24,7 +24,7 @@
 #define MASK_DATA_PORT 0x21
 
 #define NAME_SIZE 20
-#define STACK_SIZE 512
+#define STACK_SIZE_MAX 0xffffffff
 #define MAX_NB_PROCESS 12
 #define MAX_PRIO 256
 

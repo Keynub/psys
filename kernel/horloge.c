@@ -8,9 +8,6 @@
 #include <stdlib.h>
 #include <cpu.h>
 
-unsigned long horloge = 0;
-
-
 
 void tic_PIT()
 {

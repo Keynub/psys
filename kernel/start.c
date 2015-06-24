@@ -23,6 +23,7 @@ int test_run(int n);
 void kernel_start(void)
 {
 	cmpt = 0;
+	horloge=0;
 	p = CLOCKFREQ/SCHEDFREQ;
     l = NULL;
 
@@ -50,10 +51,16 @@ void kernel_start(void)
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
-    test_run(1);
 
+
+    test_run(6);
+/*
+    unsigned long size = 3;
+    const char* nom = "name";
+    printf("TEST EXIT #####################\n");
+    start(&(test_exit), size, 5, nom, NULL);
     idle((void*)1);
-
+    printf("FIN EXIT ########################\n");*/
      while(1)
 	  hlt();
 
