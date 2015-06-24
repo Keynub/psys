@@ -18,6 +18,7 @@
  uint32_t last_pid;
  uint32_t last_index;
  uint32_t cmpt;
+ uint32_t horloge;
  uint32_t p;
  list l;
 

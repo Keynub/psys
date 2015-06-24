@@ -78,6 +78,11 @@ int waitpid(int pid, int *retvalp) {
     }
 }
 
+void wait_clock(unsigned long clock){
+    process_tab[mon_pid()].state = SLEEP;
+    while(horloge < clock){}
+    process_tab[mon_pid()].state = RUNNING;
+}
 
 void delete_queue( process_t * p){
     p -> vivant = false;

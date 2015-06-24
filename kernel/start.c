@@ -23,6 +23,7 @@ int test_run(int n);
 void kernel_start(void)
 {
 	cmpt = 0;
+	horloge=0;
 	p = CLOCKFREQ/SCHEDFREQ;
     l = NULL;
 
