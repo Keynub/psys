@@ -10,20 +10,27 @@
 #include <stdio.h>
 
 void ordonnance(){
+    printf("\nordonnance\n");
     // if queue is empty, keep executing same process
-    if(queue_empty(&process_queue)) { return; }
+    if(queue_empty(&process_queue)) { printf("la file est vide\n"); return; }
 
     // TODO check for process waiting because if not, gets out
     if(est_vivant()) {
+        printf("proc vivant \n");
         queue_add(cur_proc, &process_queue, process_t, chain, prio);
-        cur_proc -> state = WAITING;
+        if(cur_proc -> state == RUNNING) {
+            cur_proc->state = WAITING;
+        }
     }
 
-    process_t * next_proc = queue_out(&process_queue, process_t, chain);
-
-    while (next_proc -> state != WAITING && next_proc -> state != BLOCKED_CHILD) {
-        queue_add(next_proc, &process_queue, process_t, chain, prio);
-        next_proc = queue_out(&process_queue, process_t, chain);
+    process_t * next_proc;
+    queue_for_each(next_proc, & process_queue, process_t, chain) {
+        printf("dans la boucle avec %s \n", next_proc->name);
+        if(next_proc -> state == WAITING) {
+            printf("il attend\n");
+            queue_del(next_proc, chain);
+            break;
+        }
     }
 
     next_proc -> state = RUNNING;
@@ -32,6 +39,7 @@ void ordonnance(){
     cur_proc = next_proc;
 
     ctx_sw(tmp -> reg, next_proc -> reg);
+    hlt();
 }
 
 char* mon_nom(){
@@ -93,6 +101,9 @@ void delete_queue( process_t * p){
 /* quand il appelle waitpid. */
 void terminaison(){
     delete_queue(cur_proc);
+    if(process_tab[mon_papa()].state == BLOCKED_CHILD) {
+        process_tab[mon_papa()].state = WAITING;
+    }
   // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
   // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
     ordonnance();
@@ -105,7 +116,6 @@ void rienfaire(unsigned long ssize) {
 }
 
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
-  printf("je suis start et je fous la merde\n");
     uint32_t pid;
 
 
@@ -139,7 +149,6 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     strcpy( process_tab[pid].name, name);
 
-  printf("coucou3\n");
     process_tab[pid].state = WAITING;
     process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -3]);
     process_tab[pid].stack[STACK_SIZE - 3] = (uint32_t) (pt_func);
@@ -148,9 +157,10 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 
-
+    printf("COUCOU PRIO = %d ET MA PRIO C'EST %d", prio, getprio(getpid()));
     if(prio > getprio(getpid())) {
         ordonnance();
+
     }
 
     return process_tab[pid].pid;
@@ -200,14 +210,15 @@ int kill(int pid){
 	  //TODO GestionFils
     }
     delete_queue(&process_tab[pid]);
-    return 0;
+
+      process_tab[pid].retval = 0;
+    return pid;
   }
 
 }
 
 void exit(int retval){
    process_tab[mon_pid()].retval = retval;
-   printf("NEW RETVAL : %d\n", process_tab[mon_pid()].retval);
    kill(mon_pid());
    while(1){
     sti(); hlt(); cli();

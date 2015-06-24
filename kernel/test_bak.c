@@ -28,9 +28,9 @@ void prog1(void)
 }
 */
 
-
-void idle(void)
+int idle(void * arg)
 {
+    arg = arg;
     start(&prog1,5,128,"prog1",NULL);
     for (int a=0 ;a<5;a++) {
         printf("idle %lu", current_clock());
@@ -40,6 +40,7 @@ void idle(void)
         for (int i = 0; i < 50000000; i++);
         cli();
     }
+    return 0;
 }
 
 int prog1(void) {
@@ -96,7 +97,7 @@ int idle(void * arg)
 	while(1) {
 	    sti(); hlt(); cli();
 	}
-    /*printf("%s je lance termm\n", mon_nom());
+    printf("%s je lance termm\n", mon_nom());
     int a = 42;
     void * b = (void *) &a;
     int pidf = start(&(sous_fifre), 4000, 192, "paramRetour", b);
