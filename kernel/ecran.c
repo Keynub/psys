@@ -126,6 +126,12 @@ void console_putbytes(char *chaine, int32_t taille)
     }
 }
 
+int cons_write(const char *str, long size)
+{
+    console_putbytes((char *) str, size);
+    return 0;
+}
+
 void affiche_haut_gauche(char * s) 
 {
     uint32_t len = strlen(s);

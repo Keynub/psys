@@ -19,7 +19,7 @@
 
 #define QUARTZ 0x1234DD
 #define CLOCKFREQ 100
-#define SCHEDFREQ 50
+#define SCHEDFREQ 10
 
 #define MASK_DATA_PORT 0x21
 
