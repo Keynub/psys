@@ -4,7 +4,9 @@
 #include "const.h"
 #include <string.h>
 #include "queue.h"
+#include "horloge.h"
 #include "mem.h"
+#include "../shared/queue.h"
 
 void ordonnance(){
     // if queue is empty, keep executing same process
@@ -26,6 +28,7 @@ void ordonnance(){
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
 
     cur_proc = next_proc;
+
     ctx_sw(tmp -> reg, next_proc -> reg);
 }
 
@@ -73,6 +76,12 @@ int waitpid(int pid, int *retvalp) {
     }
 }
 
+void wait_clock(unsigned long clock)
+{
+    clock = clock;
+}
+
+
 void delete_queue( process_t * p){
     p -> vivant = false;
     pidcell_t freed;
@@ -97,6 +106,7 @@ void rienfaire(unsigned long ssize) {
 }
 
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
+  printf("je suis start et je fous la merde\n");
     uint32_t pid;
 
     if (!queue_empty(&used_pid)){
@@ -112,11 +122,13 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
     // TODO utiliser ssize
     rienfaire(ssize);
 
+  printf("coucou1\n");
     process_tab[pid].pid_pere = mon_pid(); // fail
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
     process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
 
+  printf("coucou2\n");
     INIT_LINK(& (process_tab[pid].chain));
 
 
@@ -130,6 +142,7 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     strcpy( process_tab[pid].name, name);
 
+  printf("coucou3\n");
     process_tab[pid].state = WAITING;
     process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE -3]);
     process_tab[pid].stack[STACK_SIZE - 3] = (uint32_t) (pt_func);
@@ -138,6 +151,7 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 
+  printf("coucou4\n");
     return process_tab[pid].pid;
 }
 
@@ -164,7 +178,6 @@ int chprio(int pid, int newprio) {
 }
 
 int kill(int pid){
-
 
   if (pid<0 || pid >= MAX_NB_PROCESS || ! process_tab[pid].vivant){
     return -1;

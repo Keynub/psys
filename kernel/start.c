@@ -18,7 +18,7 @@
     uint32_t stack[STACK_SIZE];
  */
 
-//int test_run(int n);
+int test_run(int n);
 
 void kernel_start(void)
 {
@@ -40,19 +40,20 @@ void kernel_start(void)
     process_tab[index].vivant = true;
     strcpy(process_tab[index].name, "idle_p");
     process_tab[index].state = RUNNING;
-    process_tab[index].prio = 1;
+    process_tab[index].prio = 128;
     INIT_LINK(& process_tab[index].chain);
-    INIT_LIST_HEAD(&process_tab[index].enfants); // CHECK bien vide
+    INIT_LIST_HEAD(&process_tab[index].enfants);
 
     cur_proc = &process_tab[index];
 
-    regler_frequence_horloge();
+    //regler_frequence_horloge();
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
     idle();
 
 
+    while(1);
      while(1)
 	  hlt();
 

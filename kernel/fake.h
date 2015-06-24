@@ -1,8 +1,5 @@
 #ifndef FAKE_H
 #define FAKE_H
-void clock_settings(unsigned long *quartz, unsigned long *ticks);
-unsigned long current_clock();
-void wait_clock(unsigned long clock);
 
 int cons_write(const char *str, long size);
 unsigned long cons_read(char *string, unsigned long length);

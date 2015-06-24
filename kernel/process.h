@@ -51,6 +51,8 @@ void exitlol();
 
 int waitpid(int pid, int *retvalp);
 
+void wait_clock(unsigned long clock);
+
 int getprio(int pid);
 
 int chprio(int pid, int newprio);
