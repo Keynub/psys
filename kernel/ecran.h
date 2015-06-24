@@ -17,4 +17,8 @@ void affiche_haut_gauche(char * s);
 
 void defilement();
 
+void console_putbytes(char *chaine, int32_t taille);
+
+int cons_write(const char *str, long size);
+
 #endif

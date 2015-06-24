@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 void ordonnance(){
+    printf("PLOP ORDO\n");
     // if queue is empty, keep executing same process
     if(queue_empty(&process_queue)) { return; }
 
@@ -28,6 +29,7 @@ void ordonnance(){
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
 
     cur_proc = next_proc;
+    printf("FIN PLOP ORDO %d %d\n", tmp->pid, next_proc->pid);
     ctx_sw(tmp -> reg, next_proc -> reg);
 }
 
@@ -68,8 +70,10 @@ int waitpid(int pid, int *retvalp) {
             cur_proc -> state = BLOCKED_CHILD;
             ordonnance();
         }
-        *retvalp = process_tab[pid].retval;
-        return 0;
+        if(retvalp != 0) {
+            *retvalp = process_tab[pid].retval;
+        }
+        return pid;
     } else {
         return -1;
     }
@@ -78,11 +82,11 @@ int waitpid(int pid, int *retvalp) {
 
 void delete_queue( process_t * p){
     p -> vivant = false;
-    pidcell_t freed;
-    freed.pid = p->pid;
-    freed.prio = 1;
-    INIT_LINK(&freed.chain);
-    queue_add(&freed, &used_pid, pidcell_t, chain, prio);
+    pidcell_t * freed = mem_alloc(sizeof(pidcell_t));
+    freed->pid = p->pid;
+    freed->prio = 1;
+    INIT_LINK(&freed->chain);
+    queue_add(freed, &used_pid, pidcell_t, chain, prio);
 }
 
 /* Gère la terminaison d'un processus, */
@@ -104,9 +108,11 @@ void rienfaire(unsigned long ssize) {
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
     uint32_t pid;
 
+
     if (!queue_empty(&used_pid)){
         pidcell_t * pidcell = queue_out(&used_pid, pidcell_t, chain);
         pid = pidcell -> pid;
+        // TODO free pidcell
     } else {
         if(last_pid == MAX_NB_PROCESS)
             return -1;
@@ -116,14 +122,11 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     // TODO utiliser ssize
     rienfaire(ssize);
-
-    process_tab[pid].pid_pere = mon_pid(); // fail
+    process_tab[pid].pid_pere = mon_pid();
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
     process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
-
     INIT_LINK(& (process_tab[pid].chain));
-
 
     pidcell_t * newson = mem_alloc(sizeof(pidcell_t));
     newson->pid = pid;
@@ -143,6 +146,10 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 
+    if(prio > getprio(getpid())) {
+        ordonnance();
+    }
+
     return process_tab[pid].pid;
 }
 
@@ -157,12 +164,13 @@ bool in_proc_queue(int pid) {
 int chprio(int pid, int newprio) {
     // TODO check pid
     int oldprio = getprio(pid);
-    if(oldprio != pid) {
+    if(oldprio != newprio) {
         process_tab[pid].prio = newprio;
         if(in_proc_queue(pid)){
             queue_del(& process_tab[pid], chain);
             queue_add(& process_tab[pid], & process_queue, process_t, chain, prio);
         }
+        ordonnance();
     }
 
     return oldprio;
@@ -194,7 +202,8 @@ int kill(int pid){
 
 
 void exit(int retval){
-printf("PLOUF\n")
+   printf("PLOUFEXIT\n");
+   printf("PLOUF\n");
    process_tab[mon_pid()].retval = retval;
    printf("NEW RETVAL : %d\n", process_tab[mon_pid()].retval);
    kill(mon_pid());
