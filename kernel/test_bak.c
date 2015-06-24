@@ -59,14 +59,13 @@ void idle()
     printf("%s je lance termm\n", mon_nom());
     int a = 42;
     void * b = (void *) &a;
-    int pidf = start(&(sous_fifre), 24, 1, "termm", b);
+    int pidf = start(&(sous_fifre), 4000, 192, "paramRetour", b);
     int retvalp;
     waitpid(pidf, &retvalp);
     printf("termm m'a renvoyé %d\n", retvalp);
 	while (1){
 		//printf("%s\n", mon_nom());
 		sti();
-
 		for (i = 0; i < 50000000; i++);
 		cli();
 	}

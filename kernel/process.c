@@ -67,7 +67,7 @@ int waitpid(int pid, int *retvalp) {
             ordonnance();
         }
         *retvalp = process_tab[pid].retval;
-        return 0;
+        return pid;
     } else {
         return -1;
     }
@@ -75,11 +75,11 @@ int waitpid(int pid, int *retvalp) {
 
 void delete_queue( process_t * p){
     p -> vivant = false;
-    pidcell_t freed;
-    freed.pid = p->pid;
-    freed.prio = 1;
-    INIT_LINK(&freed.chain);
-    queue_add(&freed, &used_pid, pidcell_t, chain, prio);
+    pidcell_t * freed = mem_alloc(sizeof(pidcell_t));
+    freed->pid = p->pid;
+    freed->prio = 1;
+    INIT_LINK(&freed->chain);
+    queue_add(freed, &used_pid, pidcell_t, chain, prio);
 }
 
 /* Gère la terminaison d'un processus, */
@@ -99,9 +99,11 @@ void rienfaire(unsigned long ssize) {
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
     uint32_t pid;
 
+
     if (!queue_empty(&used_pid)){
         pidcell_t * pidcell = queue_out(&used_pid, pidcell_t, chain);
         pid = pidcell -> pid;
+        // TODO free pidcell
     } else {
         if(last_pid == MAX_NB_PROCESS)
             return -1;
@@ -111,14 +113,11 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
 
     // TODO utiliser ssize
     rienfaire(ssize);
-
-    process_tab[pid].pid_pere = mon_pid(); // fail
+    process_tab[pid].pid_pere = mon_pid();
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
     process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
-
     INIT_LINK(& (process_tab[pid].chain));
-
 
     pidcell_t * newson = mem_alloc(sizeof(pidcell_t));
     newson->pid = pid;
@@ -137,6 +136,10 @@ int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name
     process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) (arg);
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
+
+    if(prio > getprio(getpid())) {
+        ordonnance();
+    }
 
     return process_tab[pid].pid;
 }
