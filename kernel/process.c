@@ -9,16 +9,16 @@
 #include <stdio.h>
 
 void ordonnance(){
-    printf("PLOP ORDO\n");
     // if queue is empty, keep executing same process
     if(queue_empty(&process_queue)) { return; }
 
-    process_t * next_proc = queue_out(&process_queue, process_t, chain);
     // TODO check for process waiting because if not, gets out
     if(est_vivant()) {
         queue_add(cur_proc, &process_queue, process_t, chain, prio);
         cur_proc -> state = WAITING;
     }
+
+    process_t * next_proc = queue_out(&process_queue, process_t, chain);
 
     while (next_proc -> state != WAITING && next_proc -> state != BLOCKED_CHILD) {
         queue_add(next_proc, &process_queue, process_t, chain, prio);
@@ -29,7 +29,6 @@ void ordonnance(){
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
 
     cur_proc = next_proc;
-    printf("FIN PLOP ORDO %d %d\n", tmp->pid, next_proc->pid);
     ctx_sw(tmp -> reg, next_proc -> reg);
 }
 
@@ -177,13 +176,12 @@ int chprio(int pid, int newprio) {
 }
 
 int kill(int pid){
-
-
   if (pid<0 || pid >= MAX_NB_PROCESS || ! process_tab[pid].vivant){
     return -1;
-  }
-  else{
-    queue_del(& process_tab[pid], chain);
+  } else{
+    if(pid != mon_pid()) {
+        queue_del(&process_tab[pid], chain);
+    }
    
     if (process_tab[pid].state == BLOCKED_SEM){
       //TODO SEM
@@ -200,19 +198,14 @@ int kill(int pid){
     return 0;
   }
 
+}
 
 void exit(int retval){
-   printf("PLOUFEXIT\n");
-   printf("PLOUF\n");
    process_tab[mon_pid()].retval = retval;
    printf("NEW RETVAL : %d\n", process_tab[mon_pid()].retval);
    kill(mon_pid());
    while(1){
-   sti(); hlt(); cli();
+    sti(); hlt(); cli();
    }
-}
-
-    
-
 }
 

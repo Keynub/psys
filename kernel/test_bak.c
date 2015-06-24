@@ -47,15 +47,8 @@ void prog1(void) {
 int test_exit(void * arg) {
 arg++;
 for (int i = 0; i < 20; i++) {
-        sti();
-        for (int32_t i = 0; i < 50000000; i++) {}
-        cli();
         printf("MON retour : %d\n", process_tab[mon_pid()].retval);
-        printf("PLOUF\n");
-        for (int32_t i = 0; i < 50000000; i++) {}
-        printf("PLOUF\n");
         int retval = 5;
-        printf("PLOUF\n");
         exit(retval);
         printf("VALEUR DE RETOUR : %d\n", retval);
    }
@@ -89,7 +82,7 @@ for (int i = 0; i < 20; i++) {
 int idle(void * arg)
 {
     (void)arg;
-	unsigned long i;
+	//unsigned long i;
 	while(1) {
 	    sti(); hlt(); cli();
 	}
@@ -99,12 +92,12 @@ int idle(void * arg)
     int pidf = start(&(sous_fifre), 4000, 192, "paramRetour", b);
     int retvalp;
     waitpid(pidf, &retvalp);
-    printf("termm m'a renvoyé %d\n", retvalp);*/
+    printf("termm m'a renvoyé %d\n", retvalp);
 	while (1){
 		printf("%s\n", mon_nom());
 		sti();
 		for (i = 0; i < 50000000; i++);
 		cli();
-	}
+	}*/
 }
 

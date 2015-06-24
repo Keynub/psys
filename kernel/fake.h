@@ -6,7 +6,6 @@ void wait_clock(unsigned long clock);
 
 unsigned long cons_read(char *string, unsigned long length);
 void cons_echo(int on);
-void exit(int retval);
 int sys_info();
 
 #endif
