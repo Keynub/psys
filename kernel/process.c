@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "mem.h"
 #include "cpu.h"
+#include "../shared/queue.h"
 #include <stdio.h>
 
 void ordonnance(){
@@ -13,14 +14,15 @@ void ordonnance(){
     if(queue_empty(&process_queue)) { return; }
 
     // TODO check for process waiting because if not, gets out
-    if(est_vivant()) {
+    if(est_vivant() && cur_proc->state == RUNNING) {
+        // on ne se remet pas dans la file d'ordonnancement si on a prévu d'attendre
         queue_add(cur_proc, &process_queue, process_t, chain, prio);
         cur_proc -> state = WAITING;
     }
 
     process_t * next_proc = queue_out(&process_queue, process_t, chain);
 
-    while (next_proc -> state != WAITING && next_proc -> state != BLOCKED_CHILD) {
+    while (next_proc -> state != WAITING) {
         queue_add(next_proc, &process_queue, process_t, chain, prio);
         next_proc = queue_out(&process_queue, process_t, chain);
     }
@@ -62,24 +64,26 @@ bool has_son(int pid) {
     return false;
 }
 
-int waitpid(int pid, int *retvalp) {
-    // trouver le fils qui correspond au pid
-    if(has_son(pid)) {
-        while(process_tab[pid].vivant) {
-            cur_proc -> state = BLOCKED_CHILD;
-            ordonnance();
-        }
-        if(retvalp != 0) {
-            *retvalp = process_tab[pid].retval;
-        }
-        return pid;
-    } else {
-        return -1;
-    }
+bool has_any_son() {
+    return !queue_empty(&cur_proc -> enfants);
 }
 
+int16_t has_zombie_son() {
+    pidcell_t * ptr_elem;
+    queue_for_each(ptr_elem, &(cur_proc -> enfants), pidcell_t, chain) {
+        if(process_tab[ptr_elem -> pid].state == ZOMBIE) {
+            return ptr_elem -> pid;
+        }
+    }
+    return -1;
+}
 
+/*
+ * Mort définitive d'un processus : il s'indique non vivant et donne son PID
+ * au garbage collector.
+ */
 void delete_queue( process_t * p){
+    // passage au garbage collector.
     p -> vivant = false;
     pidcell_t * freed = mem_alloc(sizeof(pidcell_t));
     freed->pid = p->pid;
@@ -88,15 +92,98 @@ void delete_queue( process_t * p){
     queue_add(freed, &used_pid, pidcell_t, chain, prio);
 }
 
-/* Gère la terminaison d'un processus, */
-/* la valeur retval est passée au processus père */
-/* quand il appelle waitpid. */
-void terminaison(){
-    delete_queue(cur_proc);
-  // La valeur de retour de la fonction (et donc du processus) qui retourne se trouve dans %eax après la fin de la fonction.
-  // Il faut donc la récupérer grâce à une fonction en assembleur avant de lancer "terminaison".
-    ordonnance();
+int waitpid(int pid, int *retvalp) {
+    if(!has_any_son()) {
+        return -1;
+    }
+    // deux cas
+    // cas 1 : n'importe quel fils doit mourir
+    if(pid < 0) {
+        int16_t pid_zombie_son = has_zombie_son();
+        while(pid_zombie_son < 0) {
+            cur_proc -> state = BLOCKED_CHILD;
+            ordonnance();
+            pid_zombie_son = has_zombie_son();
+        }
+        // le fils est zombie
+        if(retvalp != 0) {
+            *retvalp = process_tab[pid_zombie_son].retval;
+        }
+        // maintenant, on termine définitivement le fils
+        // passage de son pid au garbage collector
+        delete_queue(&process_tab[pid_zombie_son]);
+        return pid_zombie_son;
+    } // deuxième cas : trouver le fils qui correspond au pid
+    else if(has_son(pid)) {
+        while(process_tab[pid].state != ZOMBIE) {
+            // le premier passage est obligatoire
+            // les passages suivants sont quand un fils me réveille
+            // je me rendors.
+            cur_proc->state = BLOCKED_CHILD;
+            ordonnance();
+        }
+        // le fils est zombie
+        if(retvalp != 0) {
+            *retvalp = process_tab[pid].retval;
+        }
+        // maintenant, on termine définitivement le fils
+        // passage de son pid au garbage collector
+        delete_queue(&process_tab[pid]);
+        return pid;
+    } else {
+        return -1;
+    }
+}
 
+/*
+ * Indique aux fils d'un processus que ce processus meurt.
+ * Désalloue la structure de stockage de fils en même temps.
+ */
+void delete_children( process_t * p){
+    while (!queue_empty(&p->enfants)){
+        pidcell_t * pidcell = queue_out(&p -> enfants, pidcell_t, chain);
+        int16_t pid = pidcell -> pid;
+        // on indique à chaque fils que son père est mort
+        process_tab[pid].pid_pere = -1;
+        // on libère toutes les cellules qui contenaient les enfants
+        mem_free(pidcell, sizeof(pidcell_t));
+    }
+}
+
+/*
+ * Gère les aspects communs de la terminaison.
+ * Ces aspects comprennent :
+ * - gérer la filiation (prévenir les fils du décédé pour qu'ils ne passent pas zombie mais meurent direct)
+ * - désallouer la liste des fils
+ * - si mon père existe :
+ *      passer zombie, le prévenir s'il m'attend
+ *   sinon:
+ *      libérer mon pid et m'indiquer mort
+ * - finalement, si j'étais en cours d'exécution, je devrais laisser la main.
+ */
+void terminaison(){
+    // je préviens mes fils de mon décès
+    delete_children(cur_proc);
+    // je regarde si mon père est encore vivant et m'attend
+    if(mon_papa() >= 0) {
+        // mon père vit : je ne peux pas encore mourir
+        // je mourrai dans waitpid
+        cur_proc->state = ZOMBIE;
+        if(process_tab[mon_papa()].state == BLOCKED_CHILD) {
+            // il attend moi ou un de mes frères
+            process_tab[mon_papa()].state = WAITING;
+            queue_add(& process_tab[mon_papa()], &process_queue, process_t, chain, prio);
+            // je préviens mon père qu'il pourra se réveiller
+            // si je n'étais pas le bon fils, il se rendormira
+            // sinon, il sera libéré
+        }
+    } else {
+        // si mon papa est mort, je peux mourir
+        // je m'indique comme mort et je permets aux futurs processus de voler mon adresse
+        delete_queue(cur_proc);
+    }
+    // place aux jeunes
+    ordonnance();
 }
 
 
@@ -105,6 +192,7 @@ void rienfaire(unsigned long ssize) {
 }
 
 int start(int (*pt_func)(void*), unsigned long ssize, int prio, const char *name, void *arg) {
+
     uint32_t pid;
 
 
@@ -180,21 +268,46 @@ int kill(int pid){
     return -1;
   } else{
     if(pid != mon_pid()) {
-        queue_del(&process_tab[pid], chain);
     }
-   
-    if (process_tab[pid].state == BLOCKED_SEM){
-      //TODO SEM
-    }
-    else 
-      if(process_tab[pid].state == BLOCKED_IO){
-	//TODO IO
+   switch(process_tab[pid].state) {
+       case WAITING:
+           queue_del(&process_tab[pid], chain);
+           break;
+       case RUNNING:
+           break;
+       case BLOCKED_SEM:
+       case BLOCKED_IO:
+           //todo
+           break;
+       case BLOCKED_CHILD:
+           // todo child
+           break;
+       case SLEEP:
+           // todo
+           break;
+       case ZOMBIE:
+           return -1;
+       default:
+           // todo panic
+           break;
+
+   }
+      delete_children(cur_proc);
+      if(cur_proc->pid_pere > 0) {
+          // mon père vit : je ne peux pas encore mourir
+          // je mourrai dans waitpid
+          cur_proc->state = ZOMBIE;
+          if(process_tab[cur_proc->pid_pere].state == BLOCKED_CHILD) {
+              // il attend moi ou un de mes frères
+              process_tab[cur_proc->pid_pere].state = WAITING;
+              queue_add(& process_tab[mon_papa()], &process_queue, process_t, chain, prio);
+              // je préviens mon père qu'il pourra se réveiller
+              // si je n'étais pas le bon fils, il se rendormira
+              // sinon, il sera libéré
+          }
+      } else {
+          delete_queue(&process_tab[pid]);
       }
-      else 
-	if(process_tab[pid].state == BLOCKED_CHILD){
-	  //TODO GestionFils
-    }
-    delete_queue(&process_tab[pid]);
     return 0;
   }
 

@@ -40,7 +40,7 @@ void kernel_start(void)
     process_tab[index].vivant = true;
     strcpy(process_tab[index].name, "idle_p");
     process_tab[index].state = RUNNING;
-    process_tab[index].prio = 1;
+    process_tab[index].prio = 128;
     INIT_LINK(& process_tab[index].chain);
     INIT_LIST_HEAD(&process_tab[index].enfants); // CHECK bien vide
 
@@ -52,12 +52,13 @@ void kernel_start(void)
 
 
 
-    unsigned long size = 3;
+    test_run(1);
+/*    unsigned long size = 3;
     const char* nom = "name";
     printf("TEST EXIT #####################\n");
     start(&(test_exit), size, 5, nom, NULL);
     idle((void*)1);
-    printf("FIN EXIT ########################\n");
+    printf("FIN EXIT ########################\n");*/
 
      while(1)
 	  hlt();
