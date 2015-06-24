@@ -50,7 +50,7 @@ void kernel_start(void)
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
-    test_run(1);
+    test_run(3);
 
      while(1)
 	  hlt();

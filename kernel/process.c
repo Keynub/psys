@@ -66,7 +66,9 @@ int waitpid(int pid, int *retvalp) {
             cur_proc -> state = BLOCKED_CHILD;
             ordonnance();
         }
-        *retvalp = process_tab[pid].retval;
+        if(retvalp != 0) {
+            *retvalp = process_tab[pid].retval;
+        }
         return pid;
     } else {
         return -1;
@@ -155,12 +157,13 @@ bool in_proc_queue(int pid) {
 int chprio(int pid, int newprio) {
     // TODO check pid
     int oldprio = getprio(pid);
-    if(oldprio != pid) {
+    if(oldprio != newprio) {
         process_tab[pid].prio = newprio;
         if(in_proc_queue(pid)){
             queue_del(& process_tab[pid], chain);
             queue_add(& process_tab[pid], & process_queue, process_t, chain, prio);
         }
+        ordonnance();
     }
 
     return oldprio;
