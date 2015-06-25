@@ -41,7 +41,7 @@ void ordonnance(){
     cur_proc = next_proc;
 
     ctx_sw(tmp -> reg, next_proc -> reg);
-    hlt();
+
 }
 
 char* mon_nom(){

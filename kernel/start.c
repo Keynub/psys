@@ -29,7 +29,7 @@ void kernel_start(void)
 
     last_pid = 0;
     last_index = 0;
-    last_queue = -1;
+    last_queue = 0;
 
     INIT_LIST_HEAD(&process_queue);
     INIT_LIST_HEAD(&used_pid);
@@ -53,7 +53,7 @@ void kernel_start(void)
 
 
 
-    test_run(6);
+    test_run(2);
 /*
     unsigned long size = 3;
     const char* nom = "name";
