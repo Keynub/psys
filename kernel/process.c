@@ -11,9 +11,8 @@
 #include <stdio.h>
 
 void ordonnance(){
-    printf("\nordonnance\n");
     // if queue is empty, keep executing same process
-    if(queue_empty(&process_queue)) { printf("la file est vide\n"); return; }
+    if(queue_empty(&process_queue)) { return; }
 
     // TODO check for process waiting because if not, gets out
     if(est_vivant() && cur_proc->state == RUNNING) {
@@ -24,24 +23,17 @@ void ordonnance(){
         }
     }
 
-    process_t * next_proc;
-    queue_for_each(next_proc, & process_queue, process_t, chain) {
-        printf("dans la boucle avec %s \n", next_proc->name);
-        if(next_proc -> state == WAITING) {
-            printf("il attend\n");
-            queue_del(next_proc, chain);
-            break;
-        }
-
-    }
+    process_t * next_proc = queue_out(& process_queue, process_t, chain);
 
     next_proc -> state = RUNNING;
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
-
     cur_proc = next_proc;
 
     ctx_sw(tmp -> reg, next_proc -> reg);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0e3dc260f2c0b553e9ca53e8d66c4edabe89ed14
 }
 
 char* mon_nom(){
@@ -58,6 +50,10 @@ int getpid() {
 
 int16_t mon_papa(){
     return cur_proc -> pid_pere;
+}
+
+process_t * ptr_mon_papa(){
+    return & process_tab[cur_proc -> pid_pere];
 }
 
 bool est_vivant(){
@@ -77,6 +73,7 @@ bool has_son(int pid) {
 bool has_any_son() {
     return !queue_empty(&cur_proc -> enfants);
 }
+
 
 int16_t has_zombie_son() {
     pidcell_t * ptr_elem;
@@ -138,7 +135,9 @@ int waitpid(int pid, int *retvalp) {
         int16_t pid_zombie_son = has_zombie_son();
         while(pid_zombie_son < 0) {
             cur_proc -> state = BLOCKED_CHILD;
+            // pas encore le bordel
             ordonnance();
+            // déjà le bordel
             pid_zombie_son = has_zombie_son();
         }
         // le fils est zombie
@@ -149,6 +148,7 @@ int waitpid(int pid, int *retvalp) {
         // passage de son pid au garbage collector
         delete_queue(&process_tab[pid_zombie_son]);
         delete_son(pid_zombie_son);
+        // on vient de supprimer un fils : vérif
         return pid_zombie_son;
     } // deuxième cas : trouver le fils qui correspond au pid
     else if(has_son(pid)) {
@@ -220,18 +220,10 @@ void terminaison() {
 int start(int (*pt_func)(void *), unsigned long ssize, int prio, const char *name, void *arg) {
     uint32_t pid;
 
-    uint32_t stacksize = ssize + 3;
-    uint32_t real_stacksize = sizeof(uint32_t) * stacksize;
+    //uint32_t stacksize = ssize + (512 * sizeof(uint32_t));
+    //uint32_t sizeinslots = stacksize / sizeof(uint32_t);
 
-    printf("%lu %d \n", ssize, stacksize);
-    if(stacksize >= STACK_SIZE_MAX || ssize >= STACK_SIZE_MAX) {
-        return -1;
-    }
-
-    uint32_t * stack = mem_alloc(real_stacksize);
-
-    if(stack == NULL) {
-        // mem_alloc failed
+    if(ssize >= STACK_SIZE_MAX) {
         return -1;
     }
 
@@ -246,12 +238,11 @@ int start(int (*pt_func)(void *), unsigned long ssize, int prio, const char *nam
             pid = last_pid++;
     }
 
-    process_tab[pid].stack = stack;
-
     process_tab[pid].pid_pere = mon_pid();
     process_tab[pid].pid = pid;
     process_tab[pid].vivant = true;
     process_tab[pid].prio = prio <= MAX_PRIO ? prio : MAX_PRIO; // min(prio, MAX_PRIO)
+    strcpy(process_tab[pid].name, name);
     INIT_LINK(&(process_tab[pid].chain));
 
     pidcell_t *newson = mem_alloc(sizeof(pidcell_t));
@@ -262,13 +253,12 @@ int start(int (*pt_func)(void *), unsigned long ssize, int prio, const char *nam
 
     INIT_LIST_HEAD(&process_tab[pid].enfants);
 
-    strcpy(process_tab[pid].name, name);
 
     process_tab[pid].state = WAITING;
-    process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[stacksize - 3]);
-    process_tab[pid].stack[stacksize - 3] = (uint32_t) (pt_func);
-    process_tab[pid].stack[stacksize - 2] = (uint32_t) &(exitlol);
-    process_tab[pid].stack[stacksize - 1] = (uint32_t) (arg);
+    process_tab[pid].reg[1] = (uint32_t) &(process_tab[pid].stack[STACK_SIZE - 3]);
+    process_tab[pid].stack[STACK_SIZE - 3] = (uint32_t) (pt_func);
+    process_tab[pid].stack[STACK_SIZE - 2] = (uint32_t) &(exitlol);
+    process_tab[pid].stack[STACK_SIZE - 1] = (uint32_t) (arg);
 
     queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
 
@@ -334,6 +324,7 @@ int kill(int pid) {
                 // todo panic
                 break;
         }
+        process_tab[pid].retval = 0;
         delete_children(&process_tab[pid]);
         int16_t pid_pere = process_tab[pid].pid_pere;
         if (pid_pere >= 0) {
@@ -357,8 +348,8 @@ int kill(int pid) {
 
 
 void exit(int retval) {
-    process_tab[mon_pid()].retval = retval;
     kill(mon_pid());
+    process_tab[mon_pid()].retval = retval;
     while (1) {
         sti();
         hlt();
