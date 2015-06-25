@@ -30,10 +30,7 @@ void ordonnance(){
     cur_proc = next_proc;
 
     ctx_sw(tmp -> reg, next_proc -> reg);
-<<<<<<< HEAD
 
-=======
->>>>>>> 0e3dc260f2c0b553e9ca53e8d66c4edabe89ed14
 }
 
 char* mon_nom(){

@@ -60,6 +60,8 @@ void kernel_start(void)
     test_run(4);
     test_run(5);
     test_run(6);
+    test_run(7);
+
 
 /*
     unsigned long size = 3;
