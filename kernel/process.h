@@ -16,7 +16,7 @@ typedef struct {
     char name[NAME_SIZE];
     uint8_t state;
     uint32_t reg[5];
-    uint32_t stack[STACK_SIZE];
+    uint32_t stack[512];
     bool vivant;
     link chain;
     int prio;
@@ -39,6 +39,8 @@ char* mon_nom();
 int16_t mon_pid();
 
 int16_t mon_papa();
+
+process_t * ptr_mon_papa();
 
 bool est_vivant();
 

@@ -1223,9 +1223,13 @@ test6(void)
 	pid3 = start(__proc6_2, 0xffffffff, 65, "proc6_3", (void*)5);
 	assert(pid3 < 0);
 	pid3 = start(__proc6_2, 8, 65, "proc6_3", (void*)5);
+	printf("0");
 	assert(pid3 > 0);
+	printf("1");
 	assert(waitpid(-1, &ret) == pid2);
+	printf("2");
 	assert(ret == 4);
+	printf("3");
 	assert(waitpid(-1, &ret) == pid3);
 	assert(ret == 5);
 	assert(waitpid(-1, &ret) == pid1);

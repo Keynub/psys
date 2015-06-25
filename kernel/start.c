@@ -18,6 +18,8 @@
     uint32_t stack[STACK_SIZE];
  */
 
+void printsons();
+
 int test_run(int n);
 
 void kernel_start(void)
@@ -29,7 +31,7 @@ void kernel_start(void)
 
     last_pid = 0;
     last_index = 0;
-    last_queue = -1;
+    last_queue = 0;
 
     INIT_LIST_HEAD(&process_queue);
     INIT_LIST_HEAD(&used_pid);
@@ -47,18 +49,27 @@ void kernel_start(void)
 
     cur_proc = &process_tab[index];
 
-    //regler_frequence_horloge();
+    regler_frequence_horloge();
     demasque_IRQ();
     init_traitant_IT32(traitant_IT_32);
 
+
+    test_run(1);
+    test_run(2);
+    test_run(3);
+    test_run(4);
+    test_run(5);
+    test_run(6);
+    test_run(7);
+
+
+/*
     unsigned long size = 3;
     const char* nom = "name";
     printf("TEST EXIT #####################\n");
     start(&(test_exit), size, 5, nom, NULL);
     idle((void*)1);
-    printf("FIN EXIT ########################\n");
-
-     while(1)
+    printf("FIN EXIT ########################\n");*/
 	  hlt();
 
     return;
