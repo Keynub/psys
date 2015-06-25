@@ -1260,6 +1260,7 @@ proc_timer1(void *arg)
 
 	clock_settings(&quartz, &ticks);
 	dur = (quartz + ticks) / ticks;
+	printf("clock %lu dur %lu\n", current_clock(), dur);
 	printf(" 2");
 	for (i = 4; i < 8; i++) {
 		wait_clock(current_clock() + dur);

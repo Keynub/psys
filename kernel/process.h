@@ -25,10 +25,17 @@ typedef struct {
 } process_t;
 
 typedef struct {
-   int16_t pid;
+    int16_t pid;
     link chain;
     int prio;
 } pidcell_t;
+
+typedef struct {
+    int16_t pid;
+    unsigned long clock;
+    link chain;
+    int prio;
+} sleeping_t;
 
 void ctx_sw(uint32_t * reg1, uint32_t * reg2);
 

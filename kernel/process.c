@@ -9,9 +9,12 @@
 #include "cpu.h"
 #include "../shared/queue.h"
 #include <stdio.h>
+#include "../shared/stdint.h"
 
 void ordonnance(){
     // if queue is empty, keep executing same process
+    // note : if the running process is blocked or sleeping, it should
+    // stay blocked (while loop)
     if(queue_empty(&process_queue)) { return; }
 
     // TODO check for process waiting because if not, gets out
@@ -173,9 +176,24 @@ int waitpid(int pid, int *retvalp) {
 
 
 void wait_clock(unsigned long clock) {
-    process_tab[mon_pid()].state = SLEEP;
-    while (horloge < clock) { }
-    process_tab[mon_pid()].state = RUNNING;
+
+    if (horloge < clock) {
+        //printf("horloge = %d clock = %lu\n", horloge, clock);
+        // record as sleeper
+        sleeping_t * sleep = mem_alloc(sizeof(sleeping_t));
+        sleep->pid = mon_pid();
+        sleep->clock = clock;
+        sleep->prio = 2147483647 - (int32_t)clock;
+        INIT_LINK(&sleep->chain);
+        queue_add(sleep, &sleeping, sleeping_t, chain, prio);
+        // update state
+        while (horloge < clock) {
+            process_tab[mon_pid()].state = SLEEP;
+            // exit cpu
+            ordonnance();
+        }
+    }
+    printf("fin wait_clock ; horloge = %d >= clock = %lu\n", horloge, clock);
 }
 
 /*
