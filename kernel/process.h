@@ -45,6 +45,8 @@ char* mon_nom();
 
 int16_t mon_pid();
 
+int getpid();
+
 int16_t mon_papa();
 
 process_t * ptr_mon_papa();

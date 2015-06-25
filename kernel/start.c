@@ -62,7 +62,7 @@ void kernel_start(void)
     //test_run(5);
     //test_run(6);
     sti();
-    test_run(7);
+    test_run(11);
     cli();
 
 /*

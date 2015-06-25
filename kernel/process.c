@@ -15,7 +15,7 @@ void ordonnance(){
     // if queue is empty, keep executing same process
     // note : if the running process is blocked or sleeping, it should
     // stay blocked (while loop)
-    if(queue_empty(&process_queue)) { return; }
+    if(queue_empty(&process_queue)) { printf("coucou\n"); return; }
 
     // TODO check for process waiting because if not, gets out
     if(est_vivant() && cur_proc->state == RUNNING) {
@@ -30,7 +30,11 @@ void ordonnance(){
 
     next_proc -> state = RUNNING;
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
+    printf("avant j'étais  %d\n", getpid());
+
     cur_proc = next_proc;
+
+    printf("maintenant je suis %d\n", getpid());
 
     ctx_sw(tmp -> reg, next_proc -> reg);
 
@@ -132,6 +136,7 @@ int waitpid(int pid, int *retvalp) {
     // deux cas
     // cas 1 : n'importe quel fils doit mourir
     if(pid < 0) {
+        printf("waitpid -1\n");
         int16_t pid_zombie_son = has_zombie_son();
         while(pid_zombie_son < 0) {
             cur_proc -> state = BLOCKED_CHILD;
@@ -140,6 +145,7 @@ int waitpid(int pid, int *retvalp) {
             // déjà le bordel
             pid_zombie_son = has_zombie_son();
         }
+        printf("--3--\n");
         // le fils est zombie
         if(retvalp != 0) {
             *retvalp = process_tab[pid_zombie_son].retval;
@@ -317,11 +323,13 @@ int kill(int pid) {
     if (pid <= 0 || pid >= MAX_NB_PROCESS || !process_tab[pid].vivant) {
         return -1;
     } else {
+        bool ordo = false;
         switch (process_tab[pid].state) {
             case WAITING:
                 queue_del(&process_tab[pid], chain);
                 break;
             case RUNNING:
+                ordo = true;
                 break;
             case BLOCKED_SEM:
             case BLOCKED_IO:
@@ -356,6 +364,9 @@ int kill(int pid) {
             }
         } else {
             delete_queue(&process_tab[pid]);
+        }
+        if(ordo) {
+            ordonnance();
         }
         return 0;
     }
