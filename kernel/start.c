@@ -18,6 +18,8 @@
     uint32_t stack[STACK_SIZE];
  */
 
+void printsons();
+
 int test_run(int n);
 
 void kernel_start(void)
@@ -52,7 +54,11 @@ void kernel_start(void)
     init_traitant_IT32(traitant_IT_32);
 
 
-
+    test_run(1);
+    test_run(2);
+    test_run(3);
+    test_run(4);
+    test_run(5);
     test_run(6);
 /*
     unsigned long size = 3;
