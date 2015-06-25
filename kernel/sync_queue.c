@@ -26,12 +26,20 @@ int pdelete(int fid) {
     sync_queue_t * to_delete = & queue_tab [fid];
 
     // TODO check fid for an actual used fid or return -1
+    /*if (queue_tab[fid].length != 0 || queue_tab[fid].waiting_proc != NULL){
+        code ci dessous ?
+    }
+    else{
+        return -1;
+    }*/
 
     // step one : disalloc all pidcells
 
     while (! queue_empty(& to_delete -> waiting_proc)) {
         pidcell_t * cell = queue_out(& to_delete -> waiting_proc, pidcell_t, chain);
         // TODO return all waiting processes with a negative value
+        //exit(-1);
+
         process_tab[cell -> pid].state = WAITING;
         mem_free(cell, sizeof(pidcell_t));
     }
@@ -44,7 +52,7 @@ int pdelete(int fid) {
     }
 
     // TODO : add index to list of available queue indices for reusability
-
+    // creer tableau à part regroupant les files réutilisables ?
 
     return 0;
 }
