@@ -5,13 +5,35 @@
 #include "const.h"
 #include "global.h"
 #include "segment.h"
+#include "mem.h"
 #include <stdlib.h>
 #include <cpu.h>
+#include "queue.h"
+#include "../shared/queue.h"
 
 
 void tic_PIT()
 {
     horloge ++;
+
+    if(horloge == 101)
+        printf("coucou %d\n", horloge);
+
+
+
+    while ((!queue_empty(&sleeping)) && horloge >= (queue_top(&sleeping, sleeping_t, chain))->clock) {
+        sleeping_t *sleep = queue_out(&sleeping, sleeping_t, chain);
+        process_tab[sleep->pid].state = WAITING;
+        queue_add(&process_tab[sleep->pid], &process_queue, process_t, chain, prio);
+        printf("wakeup %d\n", sleep->pid);
+        mem_free(sleep, sizeof(sleeping_t));
+        if (!queue_empty(&sleeping)) {
+            printf("Au sommet de la file on trouve %d\n",(queue_top(&sleeping, sleeping_t, chain))->pid);
+        }
+
+        // ordonnance si prioritaire ? y penser.
+    }
+
    /*
 
     char chaine [20];
@@ -26,6 +48,7 @@ if(cmpt==p){
 }
 else
 	cmpt++;
+
 
 	// TODO table des processus en attente d'un t à parcourir
 
@@ -84,5 +107,5 @@ unsigned long current_clock()
 void clock_settings(unsigned long *quartz, unsigned long *ticks)
 {
     * quartz = QUARTZ;
-    *ticks = CLOCKFREQ;
+    *ticks = QUARTZ/CLOCKFREQ;
 }

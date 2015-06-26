@@ -35,6 +35,7 @@ void kernel_start(void)
 
     INIT_LIST_HEAD(&process_queue);
     INIT_LIST_HEAD(&used_pid);
+    INIT_LIST_HEAD(&sleeping);
 
     uint32_t index = last_pid ++;
 
@@ -54,14 +55,15 @@ void kernel_start(void)
     init_traitant_IT32(traitant_IT_32);
 
 
-    test_run(1);
-    test_run(2);
-    test_run(3);
-    test_run(4);
-    test_run(5);
-    test_run(6);
-    test_run(7);
-
+    //test_run(1);
+    //test_run(2);
+    //test_run(3);
+    //test_run(4);
+    //test_run(5);
+    //test_run(6);
+    sti();
+    test_run(11);
+    cli();
 
 /*
     unsigned long size = 3;
