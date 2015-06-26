@@ -1771,6 +1771,7 @@ test12(void)
 	printf(" 4");
 	assert((pcount(fid, &count) == 0) && (count == 2));
 	assert(preceive(fid, &msg) == 0); /* Retire du tampon et debloque un emetteur. */
+	//printf("msg : %d\n", msg);
 	assert(msg == 3);
 	printf(" 7");
 	assert((pcount(fid, &count) == 0) && (count == -1));
