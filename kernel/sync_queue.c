@@ -5,6 +5,7 @@
 #include "queue.h"
 #include "mem.h"
 #include "../shared/queue.h"
+#include "stddef.h"
 
 
 //TODO : REUSE QUEUES
@@ -189,13 +190,10 @@ int preceive(int fid, int * message) {
         // we pick up a message and wake up a single sender
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        printf("AVANT IF ADRESSE MESSAGE : %p\n", message);
-        printf("AVANT IF MESSAGE : %d\n", *message);
-         * message = msg -> message;
-         printf("APRES IF MESSAGE : %d\n", *message);
-         printf("FIN IF ADRESSE MESSAGE : %p\n", message);
+        if(message != NULL) {
+            * message = msg -> message;
+        }
         mem_free(msg, sizeof(message_t));
-printf("FIN MESSAGE : %d\n", *message);
         // free space, wake up sleepyhead
 
         pidcell_t * cell = queue_out(& to_receive -> waiting_proc, pidcell_t, chain);
@@ -222,18 +220,18 @@ printf("FIN MESSAGE : %d\n", *message);
         // TODO check that queue wasn't deleted / reseted
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        printf("AVANT ELSE IF MESSAGE : %d\n", *message);
-        * message = msg -> message;
-        printf("APRES ELSE IF MESSAGE : %d\n", *message);
+        if(message != NULL) {
+            * message = msg -> message;
+        }
         mem_free(msg, sizeof(message_t));
         return 0;
     } else {
         // just pick up a message
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-         printf("AVANT ELSE MESSAGE : %d\n", *message);
-        * message = msg -> message;
-        printf("APRES ELSE MESSAGE : %d\n", *message);
+        if(message != NULL) {
+            * message = msg -> message;
+        }
         mem_free(msg, sizeof(message_t));
 
         return 0;
