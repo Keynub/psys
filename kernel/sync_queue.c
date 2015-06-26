@@ -139,7 +139,10 @@ int psend(int fid, int message) {
             wproc_t *cell = queue_out(&to_send->waiting_proc, wproc_t, chain);
 
             message_t *msg = queue_out(&to_send->messages, message_t, chain);
-            *(cell -> message) = msg->message;
+
+            if(cell -> message != 0) {
+                *(cell -> message) = msg->message;
+            }
             mem_free(msg, sizeof(message_t));
             to_send->msgs--;
 
