@@ -102,6 +102,7 @@ void delete_queue( process_t * p){
 /*
  * Indique aux fils d'un processus que ce processus meurt.
  * Désalloue la structure de stockage de fils en même temps.
+ * Termine les fils zombies.
  */
 void delete_children( process_t * p) {
     while (!queue_empty(&p->enfants)) {
@@ -109,6 +110,11 @@ void delete_children( process_t * p) {
         int16_t pid = pidcell->pid;
         // on indique à chaque fils que son père est mort
         process_tab[pid].pid_pere = -1;
+        // on termine les fils zombies
+        if(process_tab[pid].state == ZOMBIE) {
+            // s'il est zombie, quand le père meurt, le fils doit être supprimé définitivement : GC
+            delete_queue(&process_tab[pid]);
+        }
         // on libère toutes les cellules qui contenaient les enfants
         mem_free(pidcell, sizeof(pidcell_t));
     }
@@ -136,6 +142,7 @@ int waitpid(int pid, int *retvalp) {
         while(pid_zombie_son < 0) {
             cur_proc -> state = BLOCKED_CHILD;
             // pas encore le bordel
+            printf("je laisse la main...\n");
             ordonnance();
             // déjà le bordel
             pid_zombie_son = has_zombie_son();
@@ -365,13 +372,13 @@ int kill(int pid) {
 }
 
 
-void exit(int retval) {
-    kill(mon_pid());
-    process_tab[mon_pid()].retval = retval;
-    while (1) {
-        sti();
-        hlt();
-        cli();
-    }
-}
+//void exit(int retval) {
+//    kill(mon_pid());
+//    process_tab[mon_pid()].retval = retval;
+//    while (1) {
+//        sti();
+//        hlt();
+//        cli();
+//    }
+//}
 

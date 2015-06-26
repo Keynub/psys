@@ -33,3 +33,9 @@ exitlol:
     call terminaison
 
     # ne retourne jamais
+
+.globl exit
+exit:
+# param -> eax ; call exitlol
+    movl 4(%esp), %eax
+    call exitlol
