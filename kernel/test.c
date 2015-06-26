@@ -1634,7 +1634,6 @@ static void
 xwait(struct sem *s)
 {
 	assert(preceive(s->fid, 0) == 0);
-	printf("%d woke up\n", getpid());
 }
 
 static void
@@ -1644,7 +1643,6 @@ xsignal(struct sem *s)
 	assert(psend(s->fid, 1) == 0);
 	assert(pcount(s->fid, &count) == 0);
 	//assert(count == 1); XXX
-	printf("count %d\n", count);
 	assert(count < 2);
 }
 
@@ -1711,7 +1709,6 @@ test11(void)
 	pid4 = start(proc_mutex, 4000, 129, "proc_mutex", &sem);
 	int count;
 	pcount(sem.fid, &count);
-	printf("count après lancer : %d", count);
 	assert(pid1 > 0);
 	assert(pid2 > 0);
 	assert(pid3 > 0);

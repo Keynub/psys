@@ -4,6 +4,7 @@
 #include "process.h"
 #include "queue.h"
 #include "mem.h"
+#include "../shared/queue.h"
 
 
 //TODO : REUSE QUEUES
@@ -128,7 +129,7 @@ int psend(int fid, int message) {
 
         pidcell_t * me = mem_alloc(sizeof(pidcell_t));
         me->pid = mon_pid();
-        me->prio = 1;
+        me->prio = getprio(getpid());
         INIT_LINK(&me->chain);
         queue_add(me, &to_send->waiting_proc, pidcell_t, chain, prio);
 
@@ -155,7 +156,6 @@ int psend(int fid, int message) {
         queue_add(msg, &to_send->messages, message_t, chain, prio);
 
         // wake one up so that it can consume the message
-        printf("SIGNAL WAKING UP PROCESS !\n");
         pidcell_t * cell = queue_out(& to_send -> waiting_proc, pidcell_t, chain);
         process_tab[cell -> pid].state = WAITING;
         queue_add(&process_tab[cell->pid], &process_queue, process_t, chain, prio);
@@ -208,23 +208,19 @@ int preceive(int fid, int * message) {
 
         pidcell_t * me = mem_alloc(sizeof(pidcell_t));
         me->pid = mon_pid();
-        me->prio = 1;
+        me->prio = getprio(getpid());
         INIT_LINK(&me->chain);
         queue_add(me, &to_receive->waiting_proc, pidcell_t, chain, prio);
 
         cur_proc -> state = BLOCKED_IO;
         ordonnance();
-        printf("j'ai bien dormi %d\n", getpid());
         // after waking up next time
         // TODO check that queue wasn't deleted / reseted
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        printf("j'ai bien fait mes courses %d\n", getpid());
         // * message = msg -> message;
         message = &(msg -> message);
-        printf("j'ai bien déréférencé %d\n", getpid());
         mem_free(msg, sizeof(message_t));
-        printf("j'ai bien mangé %d\n", getpid());
         return 0;
     } else {
         // just pick up a message

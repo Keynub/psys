@@ -16,32 +16,15 @@ void tic_PIT()
 {
     horloge ++;
 
-    if(horloge == 101)
-        printf("coucou %d\n", horloge);
-
-
-
     while ((!queue_empty(&sleeping)) && horloge >= (queue_top(&sleeping, sleeping_t, chain))->clock) {
         sleeping_t *sleep = queue_out(&sleeping, sleeping_t, chain);
         process_tab[sleep->pid].state = WAITING;
         queue_add(&process_tab[sleep->pid], &process_queue, process_t, chain, prio);
-        printf("wakeup %d\n", sleep->pid);
         mem_free(sleep, sizeof(sleeping_t));
-        if (!queue_empty(&sleeping)) {
-            printf("Au sommet de la file on trouve %d\n",(queue_top(&sleeping, sleeping_t, chain))->pid);
-        }
 
         // ordonnance si prioritaire ? y penser.
     }
 
-   /*
-
-    char chaine [20];
-    // format = HH:MM:SS
-    // double units
-    
-    sprintf(chaine, "%02u:%02u:%02u", horlogetemp/3600, (horlogetemp%3600)/60, horlogetemp%60);
-    affiche_haut_gauche(chaine);*/
 if(cmpt==p){
 	cmpt=0;	
 	ordonnance();
