@@ -189,7 +189,8 @@ int preceive(int fid, int * message) {
         // we pick up a message and wake up a single sender
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        * message = msg -> message;
+        // * message = msg -> message;
+         message = &(msg -> message);
         mem_free(msg, sizeof(message_t));
 
         // free space, wake up sleepyhead
@@ -219,7 +220,8 @@ int preceive(int fid, int * message) {
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
         printf("j'ai bien fait mes courses %d\n", getpid());
-        * message = msg -> message;
+        // * message = msg -> message;
+        message = &(msg -> message);
         printf("j'ai bien déréférencé %d\n", getpid());
         mem_free(msg, sizeof(message_t));
         printf("j'ai bien mangé %d\n", getpid());

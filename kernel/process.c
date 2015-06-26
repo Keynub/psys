@@ -15,7 +15,7 @@ void ordonnance(){
     // if queue is empty, keep executing same process
     // note : if the running process is blocked or sleeping, it should
     // stay blocked (while loop)
-    if(queue_empty(&process_queue)) { printf("coucou\n"); return; }
+    if(queue_empty(&process_queue)) { /*printf("coucou\n");*/ return; }
 
     // TODO check for process waiting because if not, gets out
     if(est_vivant() && cur_proc->state == RUNNING) {
@@ -31,12 +31,14 @@ void ordonnance(){
     next_proc -> state = RUNNING;
     process_t * tmp = cur_proc; // need to store cur_proc or we can't change it before context switch
     printf("avant j'étais  %d\n", getpid());
-
+    //printf("CUR PROC : %d\n", cur_proc->pid);
+    //printf("PRIO : %d\n", cur_proc->prio);
     cur_proc = next_proc;
-
-    printf("maintenant je suis %d\n", getpid());
+    //printf("NEXT PROC : %d\n", next_proc->pid);
+    //printf("maintenant je suis %d\n", getpid());
 
     ctx_sw(tmp -> reg, next_proc -> reg);
+    //printf("CUR PROC (POST CTX SW) : %d\n", cur_proc->pid);
 
 }
 
