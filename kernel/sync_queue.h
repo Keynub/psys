@@ -14,6 +14,7 @@ typedef struct {
     link messages; // of type message_t;
     int capacity;
     int length;
+    bool alive;
 } sync_queue_t;
 
 typedef struct {

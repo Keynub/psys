@@ -4,15 +4,10 @@
 #include "process.h"
 #include "queue.h"
 #include "mem.h"
-#include "../shared/queue.h"
-#include "stddef.h"
 
 
 //TODO : REUSE QUEUES
 int pcreate(int count){
-
-
-
     if (count <= 0 || last_queue == (NB_QUEUE - 1)){
         return -1;
     }
@@ -21,6 +16,7 @@ int pcreate(int count){
     sync_queue_t* queue = &(queue_tab[tmp]);
     queue->capacity = count;
     queue->length = 0;
+    queue->alive = true;
     INIT_LIST_HEAD(&(queue->messages));
     INIT_LIST_HEAD(&(queue->waiting_proc));
 
@@ -55,6 +51,7 @@ int pdelete(int fid) {
         message_t * cell = queue_out(& to_delete -> messages, message_t, chain);
         mem_free(cell, sizeof(message_t));
     }
+    to_delete->alive = false;
 
     // TODO : add index to list of available queue indices for reusability
     // creer tableau à part regroupant les files réutilisables ?
@@ -64,7 +61,7 @@ int pdelete(int fid) {
 
 
 int pcount(int fid, int *count){
-    if(fid < 0 || fid > NB_QUEUE - 1){
+    if(fid < 0 || fid > NB_QUEUE - 1 || ! queue_tab[fid].alive){
         return -1;
     }
     if(queue_tab[fid].length <= 0){
@@ -97,7 +94,7 @@ int pcount(int fid, int *count){
 }
 
 int preset(int fid){
-    if(fid < 0 || fid > NB_QUEUE - 1){
+    if(fid < 0 || fid > NB_QUEUE - 1 || ! queue_tab[fid].alive){
         return -1;
     }
 
@@ -117,9 +114,11 @@ int preset(int fid){
 }
 
 int psend(int fid, int message) {
-    sync_queue_t * to_send = & queue_tab [fid];
+    if(fid < 0 || fid > NB_QUEUE - 1 || ! queue_tab[fid].alive){
+        return -1;
+    }
 
-    // TODO check fid for an actual used fid or return -1
+    sync_queue_t * to_send = & queue_tab [fid];
 
     to_send -> length ++;
 
@@ -160,7 +159,12 @@ int psend(int fid, int message) {
         pidcell_t * cell = queue_out(& to_send -> waiting_proc, pidcell_t, chain);
         process_tab[cell -> pid].state = WAITING;
         queue_add(&process_tab[cell->pid], &process_queue, process_t, chain, prio);
+
+        bool ordo = cell -> prio > getprio(getpid());
         mem_free(cell, sizeof(pidcell_t));
+        if(ordo) {
+            ordonnance();
+        }
 
         return 0;
     } else {
@@ -179,9 +183,12 @@ int psend(int fid, int message) {
 }
 
 int preceive(int fid, int * message) {
-    sync_queue_t * to_receive = & queue_tab [fid];
-    // TODO check fid etc.
 
+    if(fid < 0 || fid > NB_QUEUE - 1 || ! queue_tab[fid].alive){
+        return -1;
+    }
+
+    sync_queue_t * to_receive = & queue_tab [fid];
     to_receive -> length --;
 
     // 3 cases : senders waiting, messages empty, or base case.
@@ -190,7 +197,7 @@ int preceive(int fid, int * message) {
         // we pick up a message and wake up a single sender
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        if(message != NULL) {
+        if(message != 0) {
             * message = msg -> message;
         }
         mem_free(msg, sizeof(message_t));
@@ -199,8 +206,12 @@ int preceive(int fid, int * message) {
         pidcell_t * cell = queue_out(& to_receive -> waiting_proc, pidcell_t, chain);
         process_tab[cell -> pid].state = WAITING;
         queue_add(&process_tab[cell->pid], &process_queue, process_t, chain, prio);
-        mem_free(cell, sizeof(pidcell_t));
 
+        bool ordo = cell -> prio > getprio(getpid());
+        mem_free(cell, sizeof(pidcell_t));
+        if(ordo) {
+            ordonnance();
+        }
 
         return 0;
 
@@ -220,7 +231,7 @@ int preceive(int fid, int * message) {
         // TODO check that queue wasn't deleted / reseted
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        if(message != NULL) {
+        if(message != 0) {
             * message = msg -> message;
         }
         mem_free(msg, sizeof(message_t));
@@ -229,7 +240,7 @@ int preceive(int fid, int * message) {
         // just pick up a message
 
         message_t * msg = queue_out(&to_receive -> messages, message_t, chain);
-        if(message != NULL) {
+        if(message != 0) {
             * message = msg -> message;
         }
         mem_free(msg, sizeof(message_t));

@@ -142,7 +142,6 @@ int waitpid(int pid, int *retvalp) {
         while(pid_zombie_son < 0) {
             cur_proc -> state = BLOCKED_CHILD;
             // pas encore le bordel
-            printf("je laisse la main...\n");
             ordonnance();
             // déjà le bordel
             pid_zombie_son = has_zombie_son();
