@@ -14,6 +14,7 @@ typedef struct {
     link messages; // of type message_t;
     int capacity;
     int length;
+    int msgs;
     bool alive;
 } sync_queue_t;
 
@@ -22,6 +23,13 @@ typedef struct {
     link chain;
     int prio;
 } message_t;
+
+typedef struct {
+    int * message;
+    int pid;
+    link chain;
+    int prio;
+} wproc_t;
 
 int pcreate(int count);
 
@@ -34,5 +42,7 @@ int preceive(int fid,int *message);
 int preset(int fid);
 
 int psend(int fid, int message);
+
+int pprio (int fid, int pid, int prio);
 
 #endif

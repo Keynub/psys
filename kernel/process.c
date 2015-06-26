@@ -10,6 +10,7 @@
 #include "../shared/queue.h"
 #include <stdio.h>
 #include "../shared/stdint.h"
+#include "sync_queue.h"
 
 void ordonnance(){
     // if queue is empty, keep executing same process
@@ -292,10 +293,6 @@ int getprio(int pid) {
     return process_tab[pid].prio;
 }
 
-bool in_proc_queue(int pid) {
-    return process_tab[pid].chain.next != NULL || process_tab[pid].chain.prev != NULL;
-}
-
 int chprio(int pid, int newprio) {
     if(newprio <= 0 || newprio > MAX_PRIO) {
         return -1;
@@ -307,7 +304,13 @@ int chprio(int pid, int newprio) {
     int oldprio = getprio(pid);
     if (oldprio != newprio) {
         process_tab[pid].prio = newprio;
-        if (in_proc_queue(pid)) {
+        if (process_tab[pid].state == BLOCKED_IO) {
+            //sort in synchro queue
+            int fid = process_tab[pid].blocked;
+            pprio(fid, pid, newprio);
+        }
+        if (process_tab[pid].state == WAITING) {
+            // sort in scheduler queue
             queue_del(&process_tab[pid], chain);
             queue_add(&process_tab[pid], &process_queue, process_t, chain, prio);
         }

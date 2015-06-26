@@ -22,6 +22,7 @@ typedef struct {
     int prio;
     int16_t pid_pere;
     link enfants;
+    int blocked;
 } process_t;
 
 typedef struct {
